@@ -1,0 +1,84 @@
+{% load static %}
+<header id="header" class="header shadow">
+    <div class="header-inner">
+
+        <!-- Logo -->
+        <div class="logo">
+            <a href="{% url 'home' %}">
+                <img class="logo-light" src="{% static 'img/Yammyanime_logo.svg' %}"/>
+                <img class="logo-dark" src="{% static 'img/Yammyanime_logo.svg' %}"/>
+            </a>
+        </div>
+        <!-- End Logo -->
+
+        <!-- Rightside Menu (Search icon) -->
+        <div class="side-menu-btn">
+            <ul>
+                <!-- Search Icon -->
+                <li class="">
+                    <a class="search-overlay-menu-btn header-icon"><i class="fa fa-search"></i></a>
+                </li>
+                <!-- End Search Icon -->
+            </ul>
+        </div>
+        <!-- End Rightside Menu -->
+
+        <!-- Mobile Navbar Icon -->
+        <div class="nav-mobile nav-bar-icon">
+            <span></span>
+        </div>
+        <!-- End Mobile Navbar Icon -->
+
+        <!-- Navbar Navigation -->
+        <div class="nav-menu">
+            <ul class="nav-menu-inner">
+                <li>
+                    <a class="" href="{% url 'home' %}">Home</a>
+                </li>
+                <li>
+                    <a class="" href="{% url 'catalog' %}">Catalog</a>
+                </li>
+                <li>
+                    <a class="menu-has-sub">Artists <i class="fa fa-angle-down"></i></a>
+                    <!-- Dropdown -->
+                    <ul class="sub-dropdown dropdown">
+                        <li>
+                            <a href="artist-directory.html">Artist Directory</a>
+                        </li>
+                        <li>
+                            <a href="institutes-directory.html">Training Institutes</a>
+                        </li>
+                    </ul>
+                    <!-- End Dropdown -->
+                </li>
+                <li>
+                    <a class="menu-has-sub">Events <i class="fa fa-angle-down"></i></a>
+                    <!-- Dropdown -->
+                    <ul class="sub-dropdown dropdown">
+                        <li>
+                            <a href="upcoming-competitions.html">Competitions & Auditions</a>
+                        </li>
+                        <li>
+                            <a href="events-calendar.html">Events Calendar</a>
+                        </li>
+                        <li>
+                            <a href="past-events.html">Past Events Gallery</a>
+                        </li>
+                    </ul>
+                    <!-- End Dropdown -->
+                </li>
+                <li>
+                    <a class="" href="contact-us.html">Contact Us</a>
+                </li>
+                <li>
+                    <a class="" href="login.html">Sign In</a>
+                </li>
+                <li>
+                    <a class="btn btn-md btn-black join-btn" href="join-gth.html">Join GTH</a>
+                </li>
+            </ul>
+        </div>
+        <!-- End Navbar Navigation -->
+
+    </div>
+</header>

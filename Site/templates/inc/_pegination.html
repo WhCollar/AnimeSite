@@ -1,0 +1,21 @@
+{% load main_url %}
+{% if page_obj.has_other_pages %}
+<div class="pegination">
+    <div class="nav-links">
+
+        {% for i in page_obj.paginator.page_range %}
+        {% if page_obj.number == p %}
+        <span class="page-numbers current">{{ i }}</span>
+        {% elif i > page_obj.number|add:-3 and i < page_obj.number|add:3 %}
+        <a class="page-numbers" href="?{% param_replace page=i %}">{{ i }}</a>
+        {% endif %}
+        {% endfor %}
+
+        {% if page_obj.has_next %}
+        <a class="page-numbers" href="?{% param_replace page=page_obj.next_page_number %}"><i class="fa fa-angle-right"
+                                                                                              aria-hidden="true"></i></a>
+        {% endif %}
+
+    </div>
+</div>
+{% endif %}

@@ -1,0 +1,159 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+{% block title %}{{ block.super }} :: {{ title }}{% endblock %}
+
+{% block content %}
+<!-- CONTENT --------------------------------------------------------------------------------->
+<!-- Intro Section -->
+<section class="inner-intro dark-bg overlay-dark">
+    <div class="container">
+        <div class="row title">
+            <h2 class="h2">{{ title }}</h2>
+            <p>Explore our directory of selected artists. Use the filters to help find what you’re looking for. </p>
+            <div class="spacer-15"></div>
+            <div class="page-breadcrumb">
+                <a href="{% url 'home' %}">Home</a>/<span>{{ title }}</span>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- End Intro Section -->
+<!-- Sidemenu -->
+<section id="pushmenu-right" class="pushmenu pushmenu-right side-menu">
+    <a id="menu-sidebar-close-icon" class="menu-close"><i class="ion ion-android-close"></i></a>
+    <h5 class="white">Filters</h5>
+    <div class="filter-form">
+        <!-- Filters FORM -->
+        <form class="filters-form" id="filters" role="form">
+            <!--<div class="form-field-wrapper">
+                <input class="input-sm form-full" id="status" type="text" name="status" placeholder="Статус"
+                       list="status-list">
+
+                <datalist id="status-list">
+                    <option value="">Не учитывать</option>
+                        {% for s in status %}
+                    <option value="{{ s.title }}">{{ s.title }}</option>
+                        {% endfor %}
+                </datalist>
+
+            </div>-->
+            <div class="form-field-wrapper">
+                <label for="status" class="text-white">Статус : </label>
+                <select class="form-full" id="status" name="status">
+                    <option value="">Не учитывать</option>
+                        {% for s in status %}
+                    <option value="{{ s.title }}">{{ s.title }}</option>
+                        {% endfor %}
+                </select>
+            </div>
+            <!--<div class="form-field-wrapper">
+                <input class="input-sm form-full" id="form-age_rating" type="text" name="age_rating"
+                       placeholder="Возрастной рейтинг" list="age_rating-list">
+
+                <datalist id="age_rating-list">
+                    <option value="">
+                        {% for a in age_rating %}
+                    <option value="{{ a.title }}">
+                        {% endfor %}
+                </datalist>
+
+            </div>-->
+            <div class="form-field-wrapper">
+                <label for="form-age_rating" class="text-white">Возрастной рейтинг : </label>
+                <select class="form-full" id="form-age_rating" name="age_rating">
+                    <option value="">Не учитывать</option>
+                        {% for s in age_rating %}
+                    <option value="{{ s.title }}">{{ s.title }}</option>
+                        {% endfor %}
+                </select>
+            </div>
+            <!--<div class="form-field-wrapper">
+                <input class="input-sm form-full" id="form-content_type" type="text" name="content_type" placeholder="Тип"
+                       list="content_type-list">
+
+                <datalist id="content_type-list">
+                    <option value="">
+                        {% for с in content_type %}
+                    <option value="{{ с.title }}">
+                        {% endfor %}
+                </datalist>
+            </div>-->
+            <div class="form-field-wrapper">
+                <label for="form-content_type" class="text-white">Тип : </label>
+                <select class="form-full" id="form-content_type" name="content_type">
+                    <option value="">Не учитывать</option>
+                        {% for s in content_type %}
+                    <option value="{{ s.title }}">{{ s.title }}</option>
+                        {% endfor %}
+                </select>
+            </div>
+
+            <div class="accordion mb-15">
+                <div class="accordion-section">
+                    <h6 class="accordion-title white">Выбрать жанры</h6>
+                    <div class="accordion-content">
+                        <div class="form-field-wrapper">
+
+                            {% for g in genre %}
+                            <span><input class="input-sm" id="category" type="checkbox" name="genre"
+                                         value="{{ g.title }}">{{ g.title }}</span><br>
+                            {% endfor %}
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn btn-md btn-white form-full" type="submit" id="form-submit" name="submit">Filter</button>
+        </form>
+        <!-- END Filters	 FORM -->
+    </div>
+</section>
+<!--End Sidemenu -->
+
+<!-- Options Section -->
+<section class="ptb-60 ptb-sm-30">
+    <div class="container text-left">
+        <div class="mb-30">
+            <a id="menu-sidebar-list-icon" class="btn btn-md btn-black float-right float-none-xs"><i
+                    class="fa fa-filter"></i><span> Filters</span></a>
+            <h2> List </h2>
+            <hr>
+        </div>
+        {% for content in catalog %}
+        <div class="row mtb-30">
+            <div class="item-box col-md-4 col-sm-4 col-sm-offset-0 col-xs-8 col-xs-offset-2 mb-sm-30">
+                <a href="{{ content.get_absolute_url }}">
+                    {% if content.photo %}
+                    <img style="max-width: 245px" alt="1" src="{{ content.photo.url }}" class="item-container">
+                    {% else %}
+                    <img style="max-width: 245px" alt="1" src="{% static 'img/page_404.png' %}" class="item-container">
+                    {% endif %}
+                </a>
+            </div>
+            <div class="col-md-8 col-sm-8 col-xs-12">
+                <a href="{{ content.get_absolute_url }}"><h6>{{ content.title }}</h6></a>
+                <p class="color">Жанр: {% for genre in content.genre.all %}{{ genre }} {% endfor %} </p>
+                <p>Возрастной рейтинг: {{ content.age_rating }}</p>
+                <p>Статус: {{ content.status }}</p>
+                <p>Описание: {{ content.synopsis|truncatewords_html:35|safe }}
+                    <a class="btn" href="{{ content.get_absolute_url }}">Смотреть</a>
+                </p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+</section>
+
+<!-- End Options Section -->
+
+<!-- pegination -->
+{% include 'inc/_pegination.html' %}
+<!-- End pegination -->
+
+
+<!-- End CONTENT ------------------------------------------------------------------------------>
+{% endblock %}
