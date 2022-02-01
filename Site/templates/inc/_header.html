@@ -39,42 +39,19 @@
                     <a class="" href="{% url 'catalog' %}">Catalog</a>
                 </li>
                 <li>
-                    <a class="menu-has-sub">Artists <i class="fa fa-angle-down"></i></a>
-                    <!-- Dropdown -->
-                    <ul class="sub-dropdown dropdown">
-                        <li>
-                            <a href="artist-directory.html">Artist Directory</a>
-                        </li>
-                        <li>
-                            <a href="institutes-directory.html">Training Institutes</a>
-                        </li>
-                    </ul>
-                    <!-- End Dropdown -->
-                </li>
-                <li>
-                    <a class="menu-has-sub">Events <i class="fa fa-angle-down"></i></a>
-                    <!-- Dropdown -->
-                    <ul class="sub-dropdown dropdown">
-                        <li>
-                            <a href="upcoming-competitions.html">Competitions & Auditions</a>
-                        </li>
-                        <li>
-                            <a href="events-calendar.html">Events Calendar</a>
-                        </li>
-                        <li>
-                            <a href="past-events.html">Past Events Gallery</a>
-                        </li>
-                    </ul>
-                    <!-- End Dropdown -->
-                </li>
-                <li>
                     <a class="" href="contact-us.html">Contact Us</a>
                 </li>
                 <li>
-                    <a class="" href="login.html">Sign In</a>
+                    {% if user.is_authenticated %}
+                    <a class="btn btn-md btn-light join-btn" href="">{{ user.username }}</a>
+                    {% else %}
+                    <a class="btn btn-md btn-black join-btn" href="{% url 'login' %}">Вход</a>
+                    {% endif %}
                 </li>
                 <li>
-                    <a class="btn btn-md btn-black join-btn" href="join-gth.html">Join GTH</a>
+                    {% if user.is_authenticated %}
+                    <a class="btn btn-md btn-danger join-btn" href="{% url 'logout' %}">Выход</a>
+                    {% endif %}
                 </li>
             </ul>
         </div>

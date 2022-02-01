@@ -1,7 +1,11 @@
-from django.shortcuts import render
-from django.views.generic import ListView, DetailView
+from django.contrib.auth import logout
+from django.contrib.auth.views import LoginView
+from django.shortcuts import render, redirect
+from django.urls import reverse_lazy
+from django.views.generic import DetailView, CreateView
 from django_filters import BaseInFilter, CharFilter, FilterSet
 from django_filters.views import FilterView
+from main.forms import RegisterUserForm, LoginUserForm
 from main.models import *
 
 
@@ -50,4 +54,33 @@ class GetItem(DetailView):
     def get_context_data(self, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
         context['title'] = Content.objects.get(slug=self.kwargs['slug'])
+        return context
+
+
+class LoginUser(LoginView):
+    form_class = LoginUserForm
+    template_name = 'registration/login.html'
+
+    def get_context_data(self, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Login'
+        return context
+
+    def get_success_url(self):
+        return reverse_lazy('home')
+
+
+def logout_user(request):
+    logout(request)
+    return redirect('home')
+
+
+class RegisterUser(CreateView):
+    form_class = RegisterUserForm
+    template_name = 'registration/registration.html'
+    success_url = reverse_lazy('login')
+
+    def get_context_data(self, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Registration'
         return context

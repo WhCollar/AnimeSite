@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+{% block title %}{{ block.super }} :: {{ title }}{% endblock %}
+
+{% block content %}
+<!-- CONTENT --------------------------------------------------------------------------------->
+<!-- Intro Section -->
+<section class="inner-intro dark-bg overlay-dark">
+    <div class="container">
+        <div class="row title">
+            <h2 class="h2">{{ title }}</h2>
+            <div class="spacer-15"></div>
+            <div class="page-breadcrumb">
+                <a href="{% url 'home' %}">Home</a>/<span>{{ title }}</span>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- End Intro Section -->
+
+
+<!-- Options Section -->
+<section class="ptb-60 ptb-sm-30">
+    <div class="container text-center">
+
+        <!--
+        <div class="row mb-60">
+            <div class="col-sm-6 mb-xs-15">
+                <button class="btn btn-md btn-black" type="submit" id="form-fb" name="submit">SIGNUP USING FACEBOOK
+                </button>
+            </div>
+            <div class="col-sm-6">
+                <button class="btn btn-md btn-black" type="submit" id="form-twitter" name="submit">SIGNUP USING
+                    TWITTER
+                </button>
+            </div>
+        </div>
+
+        <hr class="mb-15">
+        <h3>OR</h3>
+        <hr>
+        -->
+
+        <div class="mtb-30">
+            <!-- Create Account FORM -->
+            <form class="registration-form" id="registration" role="form" method="post">
+                {% csrf_token %}
+
+                <!--
+                IF MAIL SENT SUCCESSFULLY
+
+                <h6 class="successContent">
+                    <i class="fa fa-check left" style="color: #5cb45d;"></i>Please click the link received on
+                    your email to confirm your account.
+                </h6>
+
+                END IF MAIL SENT SUCCESSFULLY
+
+
+                MAIL SENDING UNSUCCESSFULL
+
+                <h6 class="errorContent">
+                    <i class="fa fa-exclamation-circle left" style="color: #e1534f;"></i>There was a problem validating
+                    the form please check!
+                </h6>
+
+                END MAIL SENDING UNSUCCESSFULL
+                -->
+
+                <h3>Create Account</h3>
+                <div class="spacer-30"></div>
+                <div class="form-error">{{ form.non_field_errors }}</div>
+                <div class="row">
+                    <div class="form-field-wrapper col-sm-12">
+                        <input class="input-sm form-full" id="form-first-name" type="text" name="username"
+                               placeholder="Nickname*" required>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-field-wrapper col-sm-12">
+                        <input class="input-sm form-full" id="form-email" type="email" name="email"
+                               placeholder="Email*" required>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-field-wrapper col-sm-6">
+                        <input class="input-sm form-full" id="form-password" type="password" name="password1"
+                               placeholder="Password*" required>
+                    </div>
+                    <div class="form-field-wrapper col-sm-6">
+                        <input class="input-sm form-full" id="form-confirm-password" type="password" name = 'password2'
+                               placeholder="Password*" required>
+                    </div>
+                </div>
+                <div class="form-field-wrapper mt-15">
+                    <button class="btn btn-md btn-black" type="submit" id="form-submit" name="submit">Create Account
+                    </button>
+                </div>
+            </form>
+            <!-- END create account FORM -->
+        </div>
+    </div>
+</section>
+<!-- End Options Section -->
+{% endblock %}

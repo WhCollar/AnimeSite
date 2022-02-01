@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+{% block title %}{{ block.super }} :: {{ title }}{% endblock %}
+
+{% block content %}
+<!-- CONTENT --------------------------------------------------------------------------------->
+<!-- Intro Section -->
+<section class="inner-intro dark-bg overlay-dark">
+    <div class="container">
+        <div class="row title">
+            <h2 class="h2">{{ title }}</h2>
+            <div class="spacer-15"></div>
+            <div class="page-breadcrumb">
+                <a href="{% url 'home' %}">Home</a>/<span>{{ title }}</span>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- End Intro Section -->
+
+<!-- Login Section -->
+<section id="Pricing" class="ptb-60 ptb-sm-30">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="border-box">
+                    <h4>Уже зарегистрированы?</h4>
+                    <form method="post">
+                        <div class="form-error">{{ form.non_field_errors }}</div>
+                        {% csrf_token %}
+                        <div class="form-field-wrapper">
+                            <label for="id_email">Nickname</label>
+                            <input type="text" required="" placeholder="Enter your Email" name="username"
+                                   id="id_username" class="input-sm form-full" aria-required="true">
+                        </div>
+                        <div class="form-field-wrapper">
+                            <label for="login-pass">Password</label>
+                            <input type="password" required="" placeholder="Enter your Password" name="password"
+                                   id="login-pass" class="input-sm form-full" aria-required="true">
+                        </div>
+                        <button name="submit" type="submit" class="btn btn-md btn-black">Войти
+                        </button>
+                        <a class="float-right">Забыли пароль?</a>
+                    </form>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="border-box">
+                    <h4>Ещё не зарегистрированый?</h4>
+                    <p> Тогда перейдите по ссылке ниже и создайте свой профиль, чтобы с комфортом пользоваться нашим
+                        сервисом.</p>
+                    <a class="btn btn-md btn-black join-btn" href="{% url 'signup' %}">Зарегистрироваться</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- End Login Section -->
+
+<!-- End CONTENT ------------------------------------------------------------------------------>
+{% endblock %}
