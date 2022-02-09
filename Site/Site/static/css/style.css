@@ -4,6 +4,8 @@
 @import url("./plugin/colorbox.css");
 @import url("./plugin/jquery.fs.tipper.css");
 @import url(http://fonts.googleapis.com/css?family=Roboto:400,100,200,300,500,600,700,800,900);
+@import url('https://fonts.googleapis.com/css?family=Open+Sans');
+
 
 /* 
 * BASIC STYLE
@@ -4625,3 +4627,74 @@ ul.project-detail-block, .project-detail-block ul {
 .select__item:hover {
 	background-color: #f2f2f2;
 }
+
+/*Эта хрень нужна для группы кнопок под постером при просмотре аниме-тайтла*/
+.btn-group-custom {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    width: 100%;
+    position: relative;
+}
+
+.btn-group-custom button {
+    background-color: rgba(51, 51, 51, .9); /* Green background */
+    border: 1px solid white; /* Green border */
+    color: white; /* White text */
+    cursor: pointer; /* Pointer/hand icon */
+    float: left; /* Float the buttons side by side */
+    -webkit-box-flex: 4;
+    letter-spacing: 0px;
+    word-spacing: 1px;
+    font-weight: 400;
+    font-size: 12;
+}
+
+.btn-group-custom button:not(:last-child) {
+    border-right: none; /* Prevent double borders */
+}
+
+/* Clear floats (clearfix hack) */
+.btn-group-custom:after {
+    content: "";
+    clear: both;
+    display: table;
+}
+
+/* Add a background color on hover */
+.btn-group-custom button:hover {
+    background-color: #3e8e41;
+}
+/*Окончание этой херни.*/
+
+/* Это для лайка на странице аниме-тайтла */
+*{transition: all 0.3s linear;}
+
+.hidden-like-text{
+    font-size: 0;
+}
+
+.like{
+    font-family: 'Open Sans';
+    font-size: 16px;
+}
+
+.like-toggle{
+    letter-spacing: 0px;
+    outline:none;
+    box-shadow:none;
+    border: none;
+    width: 40px;
+    height: 30px;
+    font-size: 1.3em;
+    border-radius: 100px;
+}
+
+.like-active.basic2{
+    background: #e64646;
+    color: white;
+}
+/* Окончание */
+
+/*----------------------------------------------------------------------*/
