@@ -1,5 +1,6 @@
 from django.db import models
 from django.urls import reverse
+from django.contrib.auth.models import User
 
 '''
 Content (Slug Title Photo Status Year Season Age_rating Genre Original_source Studio 
@@ -92,8 +93,8 @@ class Content_type(models.Model):
         return self.title
 
     class Meta:
-        verbose_name = 'Тип'
-        verbose_name_plural = 'Типы'
+        verbose_name = 'Тип аниме'
+        verbose_name_plural = 'Типы аниме'
         ordering = ['title']
 
 
@@ -141,3 +142,36 @@ class Content(models.Model):
         verbose_name_plural = 'Аниме'
         ordering = ['-year']
 
+
+class ListType(models.Model):
+    title = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.title
+
+    class Meta:
+        verbose_name = 'Тип списка'
+        verbose_name_plural = 'Типы списков'
+
+
+class UserProfiles(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    gender = models.CharField(max_length=1, blank=True)
+    hometown = models.CharField(max_length=50, blank=True)
+    photo = models.ImageField(upload_to='photos/%y/%m/%d/', blank=True)
+    update_at = models.DateField(auto_now=True)
+    created_at = models.DateField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'Профиль ползователя'
+        verbose_name_plural = 'Профили пользователей'
+
+
+class ContentList(models.Model):
+    list_type = models.ForeignKey(ListType, on_delete=models.PROTECT, blank=False)
+    content = models.ForeignKey(Content, on_delete=models.PROTECT, blank=False)
+    profile = models.ForeignKey(UserProfiles, on_delete=models.PROTECT, blank=False)
+
+    class Meta:
+        verbose_name = 'Cписок, объединённый'
+        verbose_name_plural = 'Cписок, объединённый'

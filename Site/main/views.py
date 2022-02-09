@@ -46,6 +46,10 @@ def index(request):
     return render(request, 'main/index.html')
 
 
+def profile(request):
+    return render(request, 'main/profile.html')
+
+
 class GetItem(DetailView):
     model = Content
     template_name = 'main/single_item.html'

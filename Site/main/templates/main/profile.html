@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+{% block title %}{{ block.super }} :: {{ title }}{% endblock %}
+
+{% block content %}
+<!-- CONTENT --------------------------------------------------------------------------------->
+
+<!-- Intro Section -->
+<section class="inner-intro dark-bg overlay-dark" xmlns="http://www.w3.org/1999/html">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2 title">
+                <div class="item-box col-md-3 col-sm-3 col-sm-offset-0 col-xs-8 col-xs-offset-2 mb-30">
+                    {% if item.photo %}
+                    <img alt="1" src="{{ item.photo.url }}" class="item-container">
+                    {% else %}
+                    <img alt="1" src="{% static 'img/page_404.png' %}" class="item-container">
+                    {% endif %}
+                </div>
+                <div class="col-md-7 col-sm-7 col-xs-12 text-center">
+                    <h2 class="h2">Profile</h2>
+                    <div class="page-breadcrumb">
+                        <a href="{% url 'home' %}}">Home</a>/<a href="{% url 'profile' %}">Profile</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<div class="clearfix"></div>
+<!-- End Intro Section -->
+<!-- Options Section -->
+<section class="ptb ptb-sm-80">
+    <div class="container text-left">
+        <div class="row mb-60">
+            <div class="col-md-8 mb-30">
+                <p>Aenean tempor ullamcorper leo. Vivamus sed magna quis ligula eleifend adipiscing. Duis orci. Aliquam
+                    sodales tortor
+                    vitae ipsum. Aliquam nulla. Duis aliquam molestie erat. Ut et mauris vel pede varius sollicitudin.
+                    Sed ut dolor nec
+                    orci tincidunt interdum. Phasellus ipsum. Nunc tristique tempus lectus.
+                </p>
+                <a class="scroll-to-target" onclick="getElementById('cv-tab').click();" href="#cv-tab">Read More</a>
+            </div>
+            <div class="project-detail-block col-md-4">
+                <p>
+                    <strong class="dark-color">Category:</strong>Singer, Musician
+                </p>
+
+                <p>
+                    <strong class="dark-color">Place :</strong>Pune
+                </p>
+                <p>
+                    <strong class="dark-color">Email :</strong><a>www.google.com</a>
+                </p>
+                <p>
+                    <strong class="dark-color">Website :</strong><a>www.google.com</a>
+                </p>
+                <p>
+                    <strong class="dark-color">Contact :</strong>123457890
+                </p>
+            </div>
+
+        </div>
+
+        <div class="row">
+            <div class="row col-md-12">
+                <!-- Tab -->
+                <div class="tabs mt-15">
+
+                    <ul>
+                        <li><a id="tab-1" href="#tabs-1">СМОТРЮ</a></li>
+                        <li><a id="tab-2" href="#tabs-2">БУДУ СМОТРЕТЬ</a></li>
+                        <li><a id="tab-3" href="#tabs-3">ПРОСМОТРЕНО</a></li>
+                        <li><a id="tab-4" href="#tabs-4">БРОШЕНО</a></li>
+                        <li><a id="tab-5" href="#tabs-5">ЛЮБИМЫЕ</a></li>
+                    </ul>
+
+                    <div class="ui-tab-content">
+                        <!-- Lists -->
+                        <div id="tabs-1">
+                            <div class="container">
+                                <div class="row mb-15">
+
+                                </div>
+                            </div>
+                        </div>
+                        <!-------------->
+                        <div id="tabs-2">
+                            <div class="container">
+                                <div class="row mb-15">
+
+                                </div>
+                            </div>
+                        </div>
+                        <!-------------->
+                        <div id="tabs-3">
+                            <div class="container">
+                                <div class="row mb-15">
+
+                                </div>
+                            </div>
+                        </div>
+                        <!-------------->
+                        <div id="tabs-4">
+                            <div class="container">
+                                <div class="row mb-15">
+
+                                </div>
+                            </div>
+                        </div>
+                        <!-------------->
+                        <div id="tabs-5">
+                            <div class="container">
+                                <div class="row mb-15">
+
+                                </div>
+                            </div>
+                        </div>
+                        <!--End Lists-->
+                    </div>
+                </div>
+                <!-- End Tab -->
+            </div>
+        </div>
+    </div>
+</section>
+<!-- End Options Section -->
+
+<!-- End CONTENT ------------------------------------------------------------------------------>
+{% endblock %}
