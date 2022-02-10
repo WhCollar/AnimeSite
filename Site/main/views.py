@@ -6,6 +6,7 @@ from django.views.generic import DetailView, CreateView
 from django_filters import BaseInFilter, CharFilter, FilterSet
 from django_filters.views import FilterView
 from main.forms import RegisterUserForm, LoginUserForm
+from django.http import JsonResponse
 from main.models import *
 
 
@@ -88,3 +89,42 @@ class RegisterUser(CreateView):
         context = super().get_context_data(**kwargs)
         context['title'] = 'Registration'
         return context
+
+
+"""Ассинхронные запросы (AJAX)"""
+
+
+def ajax_buttons_for_add_or_delete_to_lists(request):
+    user = User.objects.get(username=request.GET.get('user_nickname', None))
+    content = Content.objects.get(slug=request.GET.get('content_slug', None))
+    like = request.GET.get('like_bool', None)
+    watching = request.GET.get('watching_bool', None)
+    will_be_watching = request.GET.get('will_be_watching_bool', None)
+    abandoned = request.GET.get('abandoned_bool', None)
+    response = {
+        'like_bool': False,
+        'watching_bool': False,
+        'will_be_watching_bool': False,
+        'abandoned_bool': False,
+    }
+    """Если на фронтенде поставлен лайк, то создаём запись о том, что пользователь добавил тайтл в любимое, иначе
+    проверяем существует ли запись о том, тайтл в любимом, если да удаляем, если нет, забиваем болт"""
+    if like == 'true':
+        add_to_like_list = ContentList(list_type=ListType.objects.get(title='Любимые'),
+                                       content=content,
+                                       user=user)
+        add_to_like_list.save()
+
+        response['like_bool'] = True
+    elif like == 'false':
+        if ContentList.objects.filter(list_type=ListType.objects.get(title='Любимые'),
+                                      content=content,
+                                      user=user).exists():
+            obj = ContentList.objects.get(list_type=ListType.objects.get(title='Любимые'),
+                                          content=content,
+                                          user=user)
+            obj.delete()
+
+            response['like_bool'] = False
+
+    return JsonResponse(response)

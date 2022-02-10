@@ -144,7 +144,7 @@ class Content(models.Model):
 
 
 class ListType(models.Model):
-    title = models.CharField(max_length=255)
+    title = models.CharField(max_length=255, unique=True)
 
     def __str__(self):
         return self.title
@@ -158,7 +158,7 @@ class UserProfiles(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     gender = models.CharField(max_length=1, blank=True)
     hometown = models.CharField(max_length=50, blank=True)
-    photo = models.ImageField(upload_to='photos/%y/%m/%d/', blank=True)
+    photo = models.ImageField(upload_to='photos/%y/%m/%d/', blank=True, null=True)
     update_at = models.DateField(auto_now=True)
     created_at = models.DateField(auto_now_add=True)
 
@@ -170,7 +170,7 @@ class UserProfiles(models.Model):
 class ContentList(models.Model):
     list_type = models.ForeignKey(ListType, on_delete=models.PROTECT, blank=False)
     content = models.ForeignKey(Content, on_delete=models.PROTECT, blank=False)
-    profile = models.ForeignKey(UserProfiles, on_delete=models.PROTECT, blank=False)
+    user = models.ForeignKey(User, on_delete=models.PROTECT, blank=False)
 
     class Meta:
         verbose_name = 'Cписок, объединённый'

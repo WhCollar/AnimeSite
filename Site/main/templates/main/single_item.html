@@ -28,15 +28,18 @@
                     <h2 class="h2">{{ title }}</h2>
                     {% if user.is_authenticated %}
                     <div class='like'>
-                        <button class='like-toggle basic2'>♥</button>
-                        <span class='hidden-like-text' style="line-height:2;">Любимое</span>
+                        <form id="likeForm" method="POST">
+                            {% csrf_token %}
+                            <button class='like-toggle basic2'>♥</button>
+                            <span class='hidden-like-text' style="line-height:2;">Любимое</span>
+                        </form>
                     </div>
                     {% else %}
                     <p style="color: #ff6666;">Зарегистрируйтесь, чтобы добавить аниме в свои списки</p>
                     {% endif %}
                     <p><strong></strong></p>
                     <div class="page-breadcrumb">
-                        <a href="{% url 'home' %}}">Home</a>/<a href="{% url 'catalog' %}">Catalog</a>/<a>{{ title}}</a>
+                        <a href="{% url 'home' %}}">Home</a>/<a href="{% url 'catalog' %}">Catalog</a>/<a>{{ title }}</a>
                     </div>
                 </div>
             </div>
@@ -209,6 +212,55 @@
 <!-- Скрипт плеера -->
 <script src="{% static 'js/video-selector.js' %}" type="text/javascript"></script>
 <!-- Конец Скрипт плеера -->
+
+
+<!-- AJAX для кнопок добавления в список -->
+{% block javascript %}
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        $(function(){
+            $('.like-toggle').click(function(){
+
+                var is_liked = false;
+
+                if (this.classList.contains('like-active')){
+                    is_liked = true;
+                    console.log("Любимое ", is_liked);
+                } else {
+                    is_liked = false;
+                    console.log("Не любимое ", is_liked);
+                }
+
+
+                $.ajax({
+                    url: "{% url 'item_ajax_buttons' %}",
+                    data: {
+                        'user_nickname': "{{ user.username }}",
+                        'content_slug': "{{ item.slug }}",
+                        'like_bool': is_liked,
+                        'watching_bool': false,
+                        'will_be_watching_bool': false,
+                        'abandoned_bool': false,
+                    },
+                    success: function (response) {
+                        if (response.like_bool == true) {
+                            console.log("Добавлено");
+                        }
+                        else {
+                            console.log("Удалено");
+                        }
+                    },
+                    error: function (response) {
+                        console.log(response.responseJSON.errors);
+                    }
+                    });
+                return false;
+            });
+        });
+    </script>
+{% endblock javascript %}
+<!-- Конец AJAX для кнопок добавления в список -->
+
 
 <!-- End CONTENT ------------------------------------------------------------------------------>
 {% endblock %}
