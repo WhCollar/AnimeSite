@@ -3534,6 +3534,7 @@ header.header-dark.header-prepare .side-menu-btn ul li a {
     -ms-transform: scale(1);
     -webkit-transform: scale(1);
     width: 100%;
+    border: 1px solid white;
     transition: all 2s cubic-bezier(0.23, 1, 0.32, 1) 0s;
     -moz-transition: all 2s cubic-bezier(0.23, 1, 0.32, 1) 0s;
     -webkit-transition: all 2s cubic-bezier(0.23, 1, 0.32, 1) 0s;
@@ -4639,7 +4640,6 @@ ul.project-detail-block, .project-detail-block ul {
 }
 
 .btn-group-custom button {
-    background-color: rgba(51, 51, 51, .9); /* Green background */
     border: 1px solid white; /* Green border */
     color: white; /* White text */
     cursor: pointer; /* Pointer/hand icon */
@@ -4650,6 +4650,15 @@ ul.project-detail-block, .project-detail-block ul {
     font-weight: 400;
     font-size: 12;
 }
+
+.btn-in-group-custom {
+    background-color: rgba(51, 51, 51, .9);
+}
+
+.btn-in-group-custom-active {
+    background-color: #3e8e41;
+}
+
 
 .btn-group-custom button:not(:last-child) {
     border-right: none; /* Prevent double borders */
@@ -4695,6 +4704,17 @@ ul.project-detail-block, .project-detail-block ul {
     background: #e64646;
     color: white;
 }
+/* Окончание */
+
+/* Лента новостей Twitter */
+
+.twitter-line{
+    max-height:550px; /* высота нашего блока */
+    background: #fff; /* цвет фона, белый */
+    border: 0px; /* размер и цвет границы блока */
+    overflow-y: scroll; /* прокрутка по вертикали */
+}
+
 /* Окончание */
 
 /*----------------------------------------------------------------------*/

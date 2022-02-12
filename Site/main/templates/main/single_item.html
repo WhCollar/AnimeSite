@@ -12,23 +12,26 @@
             <div class="col-md-8 col-md-offset-2 title">
                 <div class="col-md-5 col-sm-5 col-sm-offset-0 col-xs-12 col-xs-offset-0 mb-30">
                     {% if item.photo %}
-                    <img alt="" src="{{ item.photo.url }}" class="item-container">
+                    <img alt="1" src="{{ item.photo.url }}" class="item-container">
                     {% else %}
                     <img alt="1" src="{% static 'img/page_404.png' %}" class="item-container">
                     {% endif %}
                     {% if user.is_authenticated %}
-                    <div class="btn-group-custom">
-                        <button value="watching" style="width:30%">Смотрю</button>
-                        <button value="will-be-watching" style="width:40%;">Буду смотреть</button>
-                        <button value="abandoned" style="width:30%;">Брошено</button>
-                    </div>
+                    <form method="GET">
+                        <div class="btn-group-custom">
+                            {% csrf_token %}
+                            <button class="btn-in-group-custom" value="1" style="width:30%">Смотрю</button>
+                            <button class="btn-in-group-custom" value="2" style="width:40%;">Буду смотреть</button>
+                            <button class="btn-in-group-custom" value="3" style="width:30%;">Брошено</button>
+                        </div>
+                    </form>
                     {% endif %}
                 </div>
                 <div class="col-md-6 col-sm-6 col-xs-12 text-center">
                     <h2 class="h2">{{ title }}</h2>
                     {% if user.is_authenticated %}
                     <div class='like'>
-                        <form id="likeForm" method="POST">
+                        <form method="GET">
                             {% csrf_token %}
                             <button class='like-toggle basic2'>♥</button>
                             <span class='hidden-like-text' style="line-height:2;">Любимое</span>
@@ -218,37 +221,95 @@
 {% block javascript %}
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script>
+        $(function() {
+            $.ajax({
+                url: "{% url 'item_ajax_buttons_validate' %}",
+                data: {
+                    'user_nickname': "{{ user.username }}",
+                    'content_slug': "{{ item.slug }}",
+                },
+                success: function (response) {
+                    console.log(response);
+                    if (response.like_bool){
+                        $('.like-toggle').toggleClass('like-active');
+                        $('.like-toggle').next().toggleClass('hidden-like-text');
+                    }
+                    var btn;
+                    var btnGroup = document.querySelector('.btn-group-custom');
+                    if (response.watching_bool == true)
+                    {
+                        btn = btnGroup.querySelector('button[value="1"]');
+                        $(btn).toggleClass('btn-in-group-custom-active');
+                    }
+                    if (response.will_be_watching_bool == true)
+                    {
+                        btn = btnGroup.querySelector('button[value="2"]');
+                        $(btn).toggleClass('btn-in-group-custom-active');
+                    }
+                    if (response.abandoned_bool == true)
+                    {
+                        btn = btnGroup.querySelector('button[value="3"]');
+                        $(btn).toggleClass('btn-in-group-custom-active');
+                    }
+                },
+                error: function (response) {
+                    console.log(response.responseJSON.errors);
+                }
+                });
+            return false;
+        });
+
+
         $(function(){
-            $('.like-toggle').click(function(){
-
+            $('.btn-in-group-custom').click(function(){
                 var is_liked = false;
+                var is_watching = false;
+                var is_will_be_watching= false;
+                var is_abandoned = false;
 
-                if (this.classList.contains('like-active')){
+                var activeButtons = this.value;
+                var buttons = document.querySelector('.btn-group-custom').querySelectorAll('button');
+                for (let el of buttons){
+                    if (el.value != activeButtons){
+                        if (el.classList.contains('btn-in-group-custom-active'))
+                        {
+                            $(el).toggleClass('btn-in-group-custom-active');
+                        }
+                    }
+                }
+                $(this).toggleClass('btn-in-group-custom-active');
+
+                var like_buttons = document.querySelector('.like-toggle');
+                if (like_buttons.classList.contains('like-active'))
+                {
                     is_liked = true;
-                    console.log("Любимое ", is_liked);
-                } else {
+                }
+                else
+                {
                     is_liked = false;
-                    console.log("Не любимое ", is_liked);
                 }
 
+                var is_batton_active = this.classList.contains('btn-in-group-custom-active');
+                if (activeButtons == 1 && is_batton_active){ is_watching = true; };
+                if (activeButtons == 2 && is_batton_active){ is_will_be_watching = true; };
+                if (activeButtons == 3 && is_batton_active){ is_abandoned = true; };
 
+                console.log(is_liked);
+                console.log(is_watching);
+                console.log(is_will_be_watching);
+                console.log(is_abandoned);
                 $.ajax({
                     url: "{% url 'item_ajax_buttons' %}",
                     data: {
                         'user_nickname': "{{ user.username }}",
                         'content_slug': "{{ item.slug }}",
                         'like_bool': is_liked,
-                        'watching_bool': false,
-                        'will_be_watching_bool': false,
-                        'abandoned_bool': false,
+                        'watching_bool': is_watching,
+                        'will_be_watching_bool': is_will_be_watching,
+                        'abandoned_bool': is_abandoned,
                     },
                     success: function (response) {
-                        if (response.like_bool == true) {
-                            console.log("Добавлено");
-                        }
-                        else {
-                            console.log("Удалено");
-                        }
+                        console.log(response);
                     },
                     error: function (response) {
                         console.log(response.responseJSON.errors);
@@ -257,6 +318,61 @@
                 return false;
             });
         });
+
+        $(function(){
+            $('.like-toggle').click(function(){
+                $(this).toggleClass('like-active');
+                $(this).next().toggleClass('hidden-like-text');
+
+                var is_liked = false;
+                var is_watching = false;
+                var is_will_be_watching= false;
+                var is_abandoned = false;
+
+                if (this.classList.contains('like-active'))
+                {
+                    is_liked = true;
+                }
+                else
+                {
+                    is_liked = false;
+                }
+
+                var buttons = document.querySelector('.btn-group-custom').querySelectorAll('button');
+                for (let el of buttons){
+                    if (el.classList.contains('btn-in-group-custom-active'))
+                    {
+                        if (el.value == 1){ is_watching = true; };
+                        if (el.value == 2){ is_will_be_watching = true; };
+                        if (el.value == 3){ is_abandoned = true; };
+                    }
+                }
+
+                console.log(is_liked);
+                console.log(is_watching);
+                console.log(is_will_be_watching);
+                console.log(is_abandoned);
+                $.ajax({
+                    url: "{% url 'item_ajax_buttons' %}",
+                    data: {
+                        'user_nickname': "{{ user.username }}",
+                        'content_slug': "{{ item.slug }}",
+                        'like_bool': is_liked,
+                        'watching_bool': is_watching,
+                        'will_be_watching_bool': is_will_be_watching,
+                        'abandoned_bool': is_abandoned,
+                    },
+                    success: function (response) {
+
+                    },
+                    error: function (response) {
+                        console.log(response.responseJSON.errors);
+                    }
+                    });
+                return false;
+            });
+        });
+
     </script>
 {% endblock javascript %}
 <!-- Конец AJAX для кнопок добавления в список -->
