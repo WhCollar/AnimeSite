@@ -45,54 +45,43 @@
 
         <div class="mtb-30">
             <!-- Create Account FORM -->
-            <form class="registration-form" id="registration" role="form" method="post">
+            <form class="registration-form" id="registration" role="form" method="POST">
                 {% csrf_token %}
-
-                <!--
-                IF MAIL SENT SUCCESSFULLY
-
-                <h6 class="successContent">
-                    <i class="fa fa-check left" style="color: #5cb45d;"></i>Please click the link received on
-                    your email to confirm your account.
-                </h6>
-
-                END IF MAIL SENT SUCCESSFULLY
-
-
-                MAIL SENDING UNSUCCESSFULL
-
-                <h6 class="errorContent">
-                    <i class="fa fa-exclamation-circle left" style="color: #e1534f;"></i>There was a problem validating
-                    the form please check!
-                </h6>
-
-                END MAIL SENDING UNSUCCESSFULL
-                -->
-
                 <h3>Create Account</h3>
                 <div class="spacer-30"></div>
-                <div class="form-error">{{ form.non_field_errors }}</div>
                 <div class="row">
                     <div class="form-field-wrapper col-sm-12">
-                        <input class="input-sm form-full" id="form-first-name" type="text" name="username"
-                               placeholder="Nickname*" required>
+                        <input class="input-sm form-full" id="form-nickname" type="text" name="username"
+                               placeholder="Nickname*" required readonly onfocus="this.removeAttribute('readonly');">
+                        <p class="form-message form-message-hided">* Пользователь с таким Nickname уже зарегистрирован</p>
                     </div>
                 </div>
                 <div class="row">
                     <div class="form-field-wrapper col-sm-12">
                         <input class="input-sm form-full" id="form-email" type="email" name="email"
-                               placeholder="Email*" required>
+                               placeholder="Email*" required readonly onfocus="this.removeAttribute('readonly');">
+                        <p class="form-message form-message-hided">* Пользователь с таким email уже зарегистрирован</p>
                     </div>
                 </div>
                 <div class="row">
                     <div class="form-field-wrapper col-sm-6">
                         <input class="input-sm form-full" id="form-password" type="password" name="password1"
-                               placeholder="Password*" required>
+                               placeholder="Password*" required readonly onfocus="this.removeAttribute('readonly');">
+                        <p class="form-message form-message-hided">Пароли не совпадают</p>
                     </div>
                     <div class="form-field-wrapper col-sm-6">
                         <input class="input-sm form-full" id="form-confirm-password" type="password" name = 'password2'
-                               placeholder="Password*" required>
+                               placeholder="Confirm password*" required readonly onfocus="this.removeAttribute('readonly');">
                     </div>
+                </div>
+                <div class="form-error">
+                    {% if form.errors %}
+                        {% for field in form %}
+                            {% for error in field.errors %}
+                                <p class="form-message">{{ error|escape }}</p>
+                            {% endfor %}
+                        {% endfor %}
+                    {% endif %}
                 </div>
                 <div class="form-field-wrapper mt-15">
                     <button class="btn btn-md btn-black" type="submit" id="form-submit" name="submit">Create Account
@@ -104,4 +93,81 @@
     </div>
 </section>
 <!-- End Options Section -->
+
+<!-- AJAX для валидации формы регистрации -->
+
+{% block javascript %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+    $(function(){
+        $('#registration').submit(function (){
+            var a = $('#form-nickname').next().hasClass('form-message-hided');
+            var b = $('#form-email').next().hasClass('form-message-hided');
+            var c = $('#form-password').next().hasClass('form-message-hided');
+            if (!a || !b || !c){ return false; }
+
+            var nickname_input = document.querySelector('#form-nickname');
+            var email_form = document.querySelector('#form-email');
+            var password_input = document.querySelector('#form-password');
+            var confirm_password_input = document.querySelector('#form-confirm-password');
+
+            if (nickname_input.value == '' || email_form.value == '' || password_input.value == '' || confirm_password_input.value == ''){
+                nickname_input.style.border = '1px solid red';
+                email_form.style.border = '1px solid red';
+                password_input.style.border = '1px solid red';
+                confirm_password_input.style.border = '1px solid red';
+                return false;
+            }
+            return true;
+        });
+
+
+        $('.form-full').change(function(){
+            var password_input = document.querySelector('#form-password');
+            var confirm_password_input = document.querySelector('#form-confirm-password');
+            if (password_input.value != confirm_password_input.value){
+                password_input.style.border = '1px solid red';
+                confirm_password_input.style.border = '1px solid red';
+                $(password_input).next().removeClass('form-message-hided');
+            }else{
+                password_input.style.border = '';
+                confirm_password_input.style.border = '';
+                $(password_input).next().addClass('form-message-hided');
+            }
+
+            var nickname_input = document.querySelector('#form-nickname');
+            var email_input = document.querySelector('#form-email');
+            $.ajax({
+                url: "{% url 'registration_form_validate' %}",
+                data: {
+                    'user_nickname': nickname_input.value,
+                    'user_email': email_input.value,
+                },
+                success: function (response) {
+                    if (response.user_nickname){
+                        $(nickname_input).next().removeClass('form-message-hided');
+                        nickname_input.style.border = '1px solid red';
+                    }else{
+                        $(nickname_input).next().addClass('form-message-hided');
+                        nickname_input.style.border = '';
+                    }
+                    if (response.user_email){
+                        email_input.style.border = '1px solid red';
+                        $(email_input).next().removeClass('form-message-hided');
+                    }else{
+                        email_input.style.border = '';
+                        $(email_input).next().addClass('form-message-hided');
+                    }
+                },
+                error: function (response) {
+                    console.log(response.responseJSON.errors);
+                }
+                });
+            return false;
+        });
+    });
+</script>
+{% endblock javascript %}
+<!-- Конец AJAX  -->
+
 {% endblock %}

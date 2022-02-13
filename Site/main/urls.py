@@ -1,5 +1,6 @@
 from django.urls import path
 from .views import *
+from .ajax_views import *
 
 
 urlpatterns = [
@@ -13,4 +14,5 @@ urlpatterns = [
     path('login', LoginUser.as_view(), name='login'),
     path('logout', logout_user, name='logout'),
     path('signup', RegisterUser.as_view(), name='signup'),
+    path('registration_form_validate', registration_form_validate, name='registration_form_validate'),
 ]

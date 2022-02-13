@@ -4706,6 +4706,19 @@ ul.project-detail-block, .project-detail-block ul {
 }
 /* Окончание */
 
+/* Сообщения об ошибках формы */
+
+.form-message{
+    font-size: 12px;
+    text-align: left;
+    color: red;
+}
+
+.form-message-hided{
+    display: none;
+}
+/* Окончание */
+
 /* Лента новостей Twitter */
 
 .twitter-line{
