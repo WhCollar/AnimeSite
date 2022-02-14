@@ -46,14 +46,19 @@ def item_ajax_buttons(request):
 
 
 def item_ajax_buttons_validate(request):
-    user = User.objects.get(username=request.GET.get('user_nickname', None))
-    content = Content.objects.get(slug=request.GET.get('content_slug', None))
-    response = dict()
+    user_name = request.GET.get('user_nickname', None)
+    response = {'like_bool': False,
+                'watching_bool': False,
+                'will_be_watching_bool': False,
+                'abandoned_bool': False}
+    if not user_name == '':
+        user = User.objects.get(username=user_name)
+        content = Content.objects.get(slug=request.GET.get('content_slug', None))
 
-    response['like_bool'] = True if content_list_exists('Любимые', content, user) else False
-    response['watching_bool'] = True if content_list_exists('Смотрю', content, user) else False
-    response['will_be_watching_bool'] = True if content_list_exists('Буду смотреть', content, user) else False
-    response['abandoned_bool'] = True if content_list_exists('Брошено', content, user) else False
+        response['like_bool'] = True if content_list_exists('Любимые', content, user) else False
+        response['watching_bool'] = True if content_list_exists('Смотрю', content, user) else False
+        response['will_be_watching_bool'] = True if content_list_exists('Буду смотреть', content, user) else False
+        response['abandoned_bool'] = True if content_list_exists('Брошено', content, user) else False
 
     return JsonResponse(response)
 

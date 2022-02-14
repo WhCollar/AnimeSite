@@ -28,7 +28,11 @@
                 <div class="border-box">
                     <h4>Уже зарегистрированы?</h4>
                     <form method="post">
-                        <div class="form-error">{{ form.non_field_errors }}</div>
+                        <div class="form-error ">
+                            {% for error in form.non_field_errors %}
+                                <p class="form-message">{{error}}</p>
+                            {% endfor %}
+                        </div>
                         {% csrf_token %}
                         <div class="form-field-wrapper">
                             <label for="id_username">Nickname</label>
