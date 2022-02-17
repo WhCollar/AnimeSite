@@ -17,7 +17,7 @@
                     <img alt="1" src="{% static 'img/page_404.png' %}" class="item-container">
                     {% endif %}
                     {% if user.is_authenticated %}
-                    <form method="GET">
+                    <form method="POST">
                         <div class="btn-group-custom">
                             {% csrf_token %}
                             <button class="btn-in-group-custom" value="1" style="width:30%">Смотрю</button>
@@ -31,7 +31,7 @@
                     <h2 class="h2">{{ title }}</h2>
                     {% if user.is_authenticated %}
                     <div class='like'>
-                        <form method="GET">
+                        <form method="POST">
                             {% csrf_token %}
                             <button class='like-toggle basic2'>♥</button>
                             <span class='hidden-like-text' style="line-height:2;">Любимое</span>
@@ -170,7 +170,23 @@
                         <!-- End Плеер -->
                         <!-- Коментарии-->
                         <div id="tabs-2">
-                            <p>{{ item.synopsis|safe }}</p>
+                            {% if user.is_authenticated %}
+                                <form id="comment-form" method="POST">
+                                    {% csrf_token %}
+                                    <div class="comment-textarea" contenteditable="true" data-placeholder="Спойлеры скрывайте под тегом " data-icon="<Спойлер>"></div>
+                                    <div class="comment-menu">
+                                        <div class="bbcode">
+                                            <div class="spoiler-button bb-spoiler" data-bb="spoiler">Спойлер</div>
+                                        </div>
+                                        <button id="create-comment" class="btn btn-sm btn-black float-right">Отправить</button>
+                                    </div>
+                                </form>
+                                <hr style="margin: 10px 10px">
+                            {% endif %}
+                            <div id="main-comments-block" class="comments">
+
+                            </div>
+                            <button id="load-comments" class="btn btn-md btn-black btn-block">Загрузить комментарии</button>
                         </div>
                         <!--End Коментарии-->
                     </div>
@@ -217,9 +233,111 @@
 <!-- Конец Скрипт плеера -->
 
 
-<!-- AJAX для кнопок добавления в список -->
+<!-- AJAX для кнопок добавления в список и комментариев -->
 {% block javascript %}
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <script>
+        let comments_number = 0;
+        $(function(){
+            $('#load-comments').click(function(){
+                $.ajax({
+                        url: "{% url 'view_comment' %}",
+                        data: {
+                            'user_nickname': "{{ user.username }}",
+                            'content_slug': "{{ item.slug }}",
+                            'comments_number': comments_number,
+                        },
+                        success: function (response) {
+                            console.log(response);
+                            let commentBlock;
+                            for (comment of response['comments'])
+                            {
+                                console.log(comment);
+                                commentBlock = `<div class="comments">
+                                                    <div class="comment">
+                                                        <img class="comment-img" src="{% static 'img/page_404.png' %}">
+                                                        <div class="comment-head">
+                                                            <div class="comment-top">
+                                                                <a href="" class="comment-author">${ comment['user_commentator'] }</a>
+                                                                <div class="reply-button" onclick="">Ответить</div>
+                                                                <div class="comment-date" title="17.02.2022 08:33:26">${ comment['created_at'].substring(0,10).replace(new RegExp('-', 'g'), '.') }</div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="comment-body">
+                                                            <div class="comment-text">
+                                                               ${ comment['comment_text'] }
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <hr style="margin: 15px 15px">
+                                                </div>`;
+                                $('#main-comments-block').append(commentBlock);
+                                comments_number++;
+                            }
+                            console.log(comments_number);
+                        },
+                        error: function (response) {
+                            console.log(response.responseJSON.errors);
+                        }
+                    });
+                    return false;
+            });
+        });
+
+        $(function(){
+            $('#create-comment').click(function(){
+
+                let comment_text = $('.comment-textarea').text();
+
+                if (comment_text.length < 10)
+                {
+                    console.log("Комментарий должен быть не короче 10 символов");
+                }
+                else
+                {
+                    $.ajax({
+                        url: "{% url 'create_comment' %}",
+                        data: {
+                            'user_nickname': "{{ user.username }}",
+                            'content_slug': "{{ item.slug }}",
+                            'comment_text': comment_text,
+                        },
+                        success: function (response) {
+                            console.log(response);
+                            $('.comment-textarea').text('');
+                            comment = response['comment'];
+                            commentBlock = `<div class="comments">
+                                                <div class="comment">
+                                                    <img class="comment-img" src="{% static 'img/page_404.png' %}">
+                                                    <div class="comment-head">
+                                                        <div class="comment-top">
+                                                            <a href="" class="comment-author">${ comment['user_commentator'] }</a>
+                                                            <div class="reply-button" onclick="">Ответить</div>
+                                                            <div class="comment-date" title="17.02.2022 08:33:26">${ comment['created_at'].substring(0,10).replace(new RegExp('-', 'g'), '.') }</div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="comment-body">
+                                                        <div class="comment-text">
+                                                           ${ comment['comment_text'] }
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <hr style="margin: 15px 15px">
+                                            </div>`;
+                            $('#main-comments-block').prepend(commentBlock);
+                            comments_number++;
+                        },
+                        error: function (response) {
+                            console.log(response.responseJSON.errors);
+                        }
+                    });
+                }
+                return false;
+            });
+        });
+    </script>
+
     <script>
         $(function() {
             $.ajax({
@@ -234,8 +352,8 @@
                         $('.like-toggle').toggleClass('like-active');
                         $('.like-toggle').next().toggleClass('hidden-like-text');
                     }
-                    var btn;
-                    var btnGroup = document.querySelector('.btn-group-custom');
+                    let btn;
+                    let btnGroup = document.querySelector('.btn-group-custom');
                     if (response.watching_bool == true)
                     {
                         btn = btnGroup.querySelector('button[value="1"]');
@@ -262,13 +380,13 @@
 
         $(function(){
             $('.btn-in-group-custom').click(function(){
-                var is_liked = false;
-                var is_watching = false;
-                var is_will_be_watching= false;
-                var is_abandoned = false;
+                let is_liked = false;
+                let is_watching = false;
+                let is_will_be_watching= false;
+                let is_abandoned = false;
 
-                var activeButtons = this.value;
-                var buttons = document.querySelector('.btn-group-custom').querySelectorAll('button');
+                let activeButtons = this.value;
+                let buttons = document.querySelector('.btn-group-custom').querySelectorAll('button');
                 for (let el of buttons){
                     if (el.value != activeButtons){
                         if (el.classList.contains('btn-in-group-custom-active'))
@@ -279,7 +397,7 @@
                 }
                 $(this).toggleClass('btn-in-group-custom-active');
 
-                var like_buttons = document.querySelector('.like-toggle');
+                let like_buttons = document.querySelector('.like-toggle');
                 if (like_buttons.classList.contains('like-active'))
                 {
                     is_liked = true;
@@ -289,7 +407,7 @@
                     is_liked = false;
                 }
 
-                var is_batton_active = this.classList.contains('btn-in-group-custom-active');
+                let is_batton_active = this.classList.contains('btn-in-group-custom-active');
                 if (activeButtons == 1 && is_batton_active){ is_watching = true; };
                 if (activeButtons == 2 && is_batton_active){ is_will_be_watching = true; };
                 if (activeButtons == 3 && is_batton_active){ is_abandoned = true; };
@@ -313,7 +431,7 @@
                     error: function (response) {
                         console.log(response.responseJSON.errors);
                     }
-                    });
+                });
                 return false;
             });
         });
@@ -323,10 +441,10 @@
                 $(this).toggleClass('like-active');
                 $(this).next().toggleClass('hidden-like-text');
 
-                var is_liked = false;
-                var is_watching = false;
-                var is_will_be_watching= false;
-                var is_abandoned = false;
+                let is_liked = false;
+                let is_watching = false;
+                let is_will_be_watching= false;
+                let is_abandoned = false;
 
                 if (this.classList.contains('like-active'))
                 {
@@ -337,7 +455,7 @@
                     is_liked = false;
                 }
 
-                var buttons = document.querySelector('.btn-group-custom').querySelectorAll('button');
+                let buttons = document.querySelector('.btn-group-custom').querySelectorAll('button');
                 for (let el of buttons){
                     if (el.classList.contains('btn-in-group-custom-active'))
                     {

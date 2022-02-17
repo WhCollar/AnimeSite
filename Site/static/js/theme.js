@@ -761,3 +761,10 @@ $(function () {
 
 });
 
+/* Для кнопки спойлер. */
+
+$('.spoiler-button').click(function(){
+    var divContent = $(".comment-textarea").text();
+    divContent += " <Спойлер></Спойлер> ";
+    $(".comment-textarea").text(divContent);
+});

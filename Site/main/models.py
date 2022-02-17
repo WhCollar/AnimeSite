@@ -175,3 +175,17 @@ class ContentList(models.Model):
     class Meta:
         verbose_name = 'Cписок, объединённый'
         verbose_name_plural = 'Cписок, объединённый'
+
+
+class Comments(models.Model):
+    user_commentator = models.ForeignKey(User, on_delete=models.PROTECT, blank=False)
+    response_to_comment = models.ForeignKey('self', on_delete=models.CASCADE, null=True)
+    content = models.ForeignKey(Content, on_delete=models.PROTECT, blank=False)
+    comment_text = models.TextField(blank=False)
+    update_at = models.DateTimeField(auto_now=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ('created_at',)
+        verbose_name = 'Комментарий'
+        verbose_name_plural = 'Комментарии'

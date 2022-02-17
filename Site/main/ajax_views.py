@@ -75,3 +75,62 @@ def registration_form_validate(request):
     response['user_email'] = User.objects.filter(email=user_email).exists()
 
     return JsonResponse(response)
+
+
+"""Сохранение комментария"""
+
+
+def create_comment(request):
+    user = User.objects.get(username=request.GET.get('user_nickname', None))
+    content = Content.objects.get(slug=request.GET.get('content_slug', None))
+    comment_text = request.GET.get('comment_text', None)
+    response = dict()
+
+    try:
+        obj = Comments(user_commentator=user, content=content, comment_text=comment_text)
+        obj.save()
+        response['is_it_successful'] = True
+        comment = {
+            "user_commentator": obj.user_commentator.username,
+            "comment_text": obj.comment_text,
+            "created_at": obj.created_at
+        }
+        response['comment'] = comment
+    except:
+        response['is_it_successful'] = False
+
+    return JsonResponse(response)
+
+
+"""Вывод комментариев"""
+
+
+def view_comment(request):
+    user = User.objects.get(username=request.GET.get('user_nickname', None))
+    content = Content.objects.get(slug=request.GET.get('content_slug', None))
+    c_num = int(request.GET.get('comments_number', None))
+    c_num_next7 = c_num + 7
+    response = dict()
+    comments = list()
+
+    objs = Comments.objects.filter(user_commentator=user, content=content).order_by('-created_at')[c_num:c_num_next7]
+    for obj in objs:
+        comment = {
+            "user_commentator": obj.user_commentator.username,
+            "comment_text": obj.comment_text,
+            "created_at": obj.created_at
+        }
+        comments.append(comment)
+
+    response["comments"] = comments
+
+    return JsonResponse(response)
+
+
+"""Вывод ответтов на комментарий"""
+
+
+def view_response_comment(request):
+    response = dict()
+
+    return JsonResponse(response)
