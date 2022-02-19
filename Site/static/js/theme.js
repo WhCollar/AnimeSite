@@ -761,10 +761,71 @@ $(function () {
 
 });
 
-/* Для кнопки спойлер. */
+/* Для кнопки добавить спойлер. */
 
-$('.spoiler-button').click(function(){
-    var divContent = $(".comment-textarea").text();
-    divContent += " <Спойлер></Спойлер> ";
-    $(".comment-textarea").text(divContent);
-});
+function addSpoiler(element){
+    let comment_textarea = $(element).closest('div[class="comment-form"]').find('div[class="comment-textarea"]');
+    let comment_text = $(comment_textarea).text();
+    comment_text += " <Спойлер></Спойлер> ";
+    $(comment_textarea).text(comment_text);
+}
+
+/* Для кнопки показать спойлер спойлер. */
+
+function showSpoiler(element){
+    if ($(element).attr('style') == 'display: initial;')
+    {
+        $(element).css('display', 'none');
+        $(element).next().css('display', 'initial');
+    }
+    else
+    {
+        $(element).css('display', 'initial');
+        $(element).next().css('display', 'none');
+    }
+}
+
+function hideSpoiler(element){
+    if ($(element).attr('style') == 'display: initial;')
+    {
+        $(element).css('display', 'none');
+        $(element).prev().css('display', 'initial');
+    }
+    else
+    {
+        $(element).css('display', 'initial');
+        $(element).prev().css('display', 'none');
+    }
+}
+
+function toReply(element, comment_id, nickname){
+    let parent_element = $(element).closest('div[class="comments"]');
+    if (!$(parent_element).find('div[class="comment-form"]').length){
+        let obj = `<div class="comment-form">
+                        <div class="comment-textarea" contenteditable="true" data-placeholder="Спойлеры скрывайте под тегом " data-icon="<Спойлер>"></div>
+                        <div class="comment-menu">
+                                <div class="bbcode">
+                                    <div onclick="addSpoiler(this)" class="spoiler-button" style="line-height: unset;">Спойлер</div>
+                                </div>
+                                <button onclick="createCommentR(this, ${ comment_id }, '${ nickname }')" class="btn btn-md btn-black float-right">Отправить</button>
+                            </div>
+                        </div>`;
+        $(parent_element).append(obj);
+    }
+    else
+    {
+        $(parent_element).find('div[class="comment-form"]').remove();
+    }
+
+}
+
+function moreComments(element){
+    if ($(element).attr('style') == 'max-height: 0px;')
+    {
+        $(element).next().css('max-height', 'none;').css('overflow', 'visible');
+    }
+    else
+    {
+        $(element).next().css('max-height', ';').css('overflow', '');
+    }
+}

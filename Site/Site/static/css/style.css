@@ -4860,14 +4860,12 @@ ul.project-detail-block, .project-detail-block ul {
 }
 
 .reply-button {
-    padding: 2px 7px;
+    padding: 2px 5px;
     display: inline-block;
     font-size: 12px;
     cursor: pointer;
     margin-left: 10px;
-    color: var(--main-text);
     border: 1px solid;
-    border-color: var(--border-first);
 }
 
 .comment-date {
@@ -4883,6 +4881,54 @@ ul.project-detail-block, .project-detail-block ul {
     word-break: break-word;
     overflow: hidden;
 }
+
+.spoiler-button {
+    background: 0 0;
+    border: 1px solid;
+    line-height: 1;
+    font-size: 12px;
+    padding: 2px 7px;
+    cursor: pointer;
+    text-align: center;
+}
+
+spoiler {
+    cursor: pointer;
+}
+
+spoiler:before {
+    content: '[ ';
+    color: #ff6666;
+}
+
+spoiler:after {
+    content: ' ]';
+    color: #ff6666;
+}
+
+.comment-childs-container {
+    -moz-transition: max-height .5s;
+    -ms-transition: max-height .5s;
+    -o-transition: max-height .5s;
+    -webkit-transition: max-height .5s;
+    transition: max-height .5s;
+    overflow: hidden;
+    max-height: 0;
+}
+
+.comment-childs {
+    padding: 10px 0 10px 10px;
+    border-bottom: 1px solid;
+}
+
+.comment-more-button {
+    text-align: center;
+    padding: 6px 8px 6px 30px;
+    border: 1px solid;
+    border-top: none;
+    cursor: pointer;
+}
+
 /* Окончание */
 
 /*----------------------------------------------------------------------*/

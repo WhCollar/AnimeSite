@@ -6,7 +6,8 @@ from main.models import *
 
 
 def content_list_exists(list_type, content, user):
-    return ContentList.objects.filter(list_type=ListType.objects.get(title=list_type), content=content, user=user).exists()
+    return ContentList.objects.filter(list_type=ListType.objects.get(title=list_type), content=content,
+                                      user=user).exists()
 
 
 def content_list_add(list_type, content, user):
@@ -84,20 +85,30 @@ def create_comment(request):
     user = User.objects.get(username=request.GET.get('user_nickname', None))
     content = Content.objects.get(slug=request.GET.get('content_slug', None))
     comment_text = request.GET.get('comment_text', None)
-    response = dict()
+    reply_to_nickname = request.GET.get('reply_to_nickname', None)
+    obj = None
 
     try:
-        obj = Comments(user_commentator=user, content=content, comment_text=comment_text)
-        obj.save()
-        response['is_it_successful'] = True
-        comment = {
-            "user_commentator": obj.user_commentator.username,
-            "comment_text": obj.comment_text,
-            "created_at": obj.created_at
-        }
-        response['comment'] = comment
+        response_to_comment = Comments.objects.get(id=request.GET.get('reply_to_comment_id', None))
+        obj = Comments(user_commentator=user,
+                       content=content,
+                       comment_text=comment_text,
+                       response_to_comment=response_to_comment)
     except:
-        response['is_it_successful'] = False
+        obj = Comments(user_commentator=user, content=content, comment_text=comment_text)
+        print("Shit code")
+
+    response = dict()
+
+    obj.save()
+    comment = {
+        "user_commentator": obj.user_commentator.username,
+        "comment_text": obj.comment_text,
+        "created_at": obj.created_at,
+        "reply_to_nickname": reply_to_nickname,
+        "id": obj.id
+    }
+    response['comment'] = comment
 
     return JsonResponse(response)
 
@@ -113,12 +124,24 @@ def view_comment(request):
     response = dict()
     comments = list()
 
-    objs = Comments.objects.filter(user_commentator=user, content=content).order_by('-created_at')[c_num:c_num_next7]
+    objs = Comments.objects.filter(user_commentator=user, content=content, response_to_comment__isnull=True).order_by('-created_at')[c_num:c_num_next7]
     for obj in objs:
+        responses = list()
+        if Comments.objects.filter(response_to_comment=obj.id).exists:
+            for el in Comments.objects.filter(response_to_comment=obj.id):
+                child = {
+                    "user_commentator": el.user_commentator.username,
+                    "comment_text": el.comment_text,
+                    "created_at": el.created_at,
+                    "id": el.id,
+                }
+                responses.append(child)
         comment = {
             "user_commentator": obj.user_commentator.username,
             "comment_text": obj.comment_text,
-            "created_at": obj.created_at
+            "created_at": obj.created_at,
+            "id": obj.id,
+            "responses": responses
         }
         comments.append(comment)
 

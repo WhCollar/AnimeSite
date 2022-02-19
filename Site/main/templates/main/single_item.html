@@ -171,20 +171,19 @@
                         <!-- Коментарии-->
                         <div id="tabs-2">
                             {% if user.is_authenticated %}
-                                <form id="comment-form" method="POST">
-                                    {% csrf_token %}
+                                <div class="comment-form">
                                     <div class="comment-textarea" contenteditable="true" data-placeholder="Спойлеры скрывайте под тегом " data-icon="<Спойлер>"></div>
                                     <div class="comment-menu">
                                         <div class="bbcode">
-                                            <div class="spoiler-button bb-spoiler" data-bb="spoiler">Спойлер</div>
+                                            <div onclick="addSpoiler(this)" class="spoiler-button" style="line-height: unset;">Спойлер</div>
                                         </div>
-                                        <button id="create-comment" class="btn btn-sm btn-black float-right">Отправить</button>
+                                        <button onclick="createCommentR(this, false, false)" class="btn btn-md btn-black float-right">Отправить</button>
                                     </div>
-                                </form>
+                                </div>
                                 <hr style="margin: 10px 10px">
                             {% endif %}
                             <div id="main-comments-block" class="comments">
-
+                                <!-- Здесь отображаются комментарии -->
                             </div>
                             <button id="load-comments" class="btn btn-md btn-black btn-block">Загрузить комментарии</button>
                         </div>
@@ -239,6 +238,24 @@
 
     <script>
         let comments_number = 0;
+
+        function commentTextFormatting(text){
+            let numSpoiler = text.split('<Спойлер>').length - 1;
+            let result = '';
+            if (numSpoiler > 0){
+                let spoilerText = '';
+                for (let i = 0; i < numSpoiler; i++){
+                    spoilerText = text.substring(text.indexOf('<Спойлер>') + 9, text.indexOf('</Спойлер>'));
+                    result = text.substring(0, text.indexOf('<Спойлер>'));
+                    result += `<button onclick="showSpoiler(this)" class="spoiler-button" style="display: initial;">Спойлер!</button>
+                                <spoiler onclick="hideSpoiler(this)" style="display: none;"> ${ spoilerText } </spoiler>`;
+                    result += text.substring(text.indexOf('</Спойлер>') + 10, text.length);
+                    text = result;
+                }
+            }
+            return text;
+        }
+
         $(function(){
             $('#load-comments').click(function(){
                 $.ajax({
@@ -253,29 +270,65 @@
                             let commentBlock;
                             for (comment of response['comments'])
                             {
-                                console.log(comment);
-                                commentBlock = `<div class="comments">
+                                commentBlock = `<div class="comments" id="${ comment['id'] }">
                                                     <div class="comment">
-                                                        <img class="comment-img" src="{% static 'img/page_404.png' %}">
+                                                        <img class="comment-img" src="">
                                                         <div class="comment-head">
                                                             <div class="comment-top">
                                                                 <a href="" class="comment-author">${ comment['user_commentator'] }</a>
-                                                                <div class="reply-button" onclick="">Ответить</div>
-                                                                <div class="comment-date" title="17.02.2022 08:33:26">${ comment['created_at'].substring(0,10).replace(new RegExp('-', 'g'), '.') }</div>
+                                                                <div class="reply-button" onclick="toReply(this, ${ comment['id'] }, '${ comment['user_commentator'] }')">Ответить</div>
+                                                                <div class="comment-date">${ comment['created_at'].substring(0,10).replace(new RegExp('-', 'g'), '.') }</div>
                                                             </div>
                                                         </div>
                                                         <div class="comment-body">
                                                             <div class="comment-text">
-                                                               ${ comment['comment_text'] }
+                                                               ${ commentTextFormatting(comment['comment_text']) }
                                                             </div>
                                                         </div>
                                                     </div>
                                                     <hr style="margin: 15px 15px">
+                                                    <div class="comment-childs-container" style="max-height: 0px;">
+                                                        <div class="comment-childs">
+                                                        </div>
+                                                    </div>
                                                 </div>`;
+
                                 $('#main-comments-block').append(commentBlock);
                                 comments_number++;
+
+                                if (comment['responses'].length != 0){
+                                    let button = `<div class="comment-more-button" onclick="moreReplyComments(this)">
+                                                Показать ответы
+                                            </div>`;
+                                    $(`#${comment['id']}`).find('div[class="comment-childs-container"]').before(button);
+                                    let childComment = '';
+                                    for (child of comment['responses']){
+                                        childComment = `<div class="comments">
+                                                    <div class="comment">
+                                                        <img class="comment-img" src="">
+                                                        <div class="comment-head">
+                                                            <div class="comment-top">
+                                                                <a href="" class="comment-author">${ child['user_commentator'] }</a>
+                                                                <div class="reply-button" onclick="toReply(this, ${ child['id'] }, '${ child['user_commentator'] }')">Ответить</div>
+                                                                <div class="comment-date">${ child['created_at'].substring(0,10).replace(new RegExp('-', 'g'), '.') }</div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="comment-body">
+                                                            <div class="comment-text">
+                                                               ${ commentTextFormatting(child['comment_text']) }
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <hr style="margin: 15px 15px">
+                                                    <div class="comment-childs-container" style="max-height: 0px;">
+                                                        <div class="comment-childs">
+                                                        </div>
+                                                    </div>
+                                                </div>`;
+                                        $(`#${comment['id']}`).find('div[class="comment-childs"]').append(childComment);
+                                    }
+                                }
                             }
-                            console.log(comments_number);
                         },
                         error: function (response) {
                             console.log(response.responseJSON.errors);
@@ -285,57 +338,71 @@
             });
         });
 
-        $(function(){
-            $('#create-comment').click(function(){
 
-                let comment_text = $('.comment-textarea').text();
+        function createCommentR(element, comment_id, reply_nickname){
 
-                if (comment_text.length < 10)
-                {
-                    console.log("Комментарий должен быть не короче 10 символов");
-                }
-                else
-                {
-                    $.ajax({
-                        url: "{% url 'create_comment' %}",
-                        data: {
-                            'user_nickname': "{{ user.username }}",
-                            'content_slug': "{{ item.slug }}",
-                            'comment_text': comment_text,
-                        },
-                        success: function (response) {
-                            console.log(response);
-                            $('.comment-textarea').text('');
-                            comment = response['comment'];
-                            commentBlock = `<div class="comments">
-                                                <div class="comment">
-                                                    <img class="comment-img" src="{% static 'img/page_404.png' %}">
-                                                    <div class="comment-head">
-                                                        <div class="comment-top">
-                                                            <a href="" class="comment-author">${ comment['user_commentator'] }</a>
-                                                            <div class="reply-button" onclick="">Ответить</div>
-                                                            <div class="comment-date" title="17.02.2022 08:33:26">${ comment['created_at'].substring(0,10).replace(new RegExp('-', 'g'), '.') }</div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="comment-body">
-                                                        <div class="comment-text">
-                                                           ${ comment['comment_text'] }
-                                                        </div>
+            let comment_textarea = $(element).closest('div[class="comment-form"]').find('div[class="comment-textarea"]');
+            let comment_text = $(comment_textarea).text();
+
+            if (comment_text.length < 10)
+            {
+                console.log("Комментарий должен быть не короче 10 символов");
+            }
+            else
+            {
+                $.ajax({
+                    url: "{% url 'create_comment' %}",
+                    data: {
+                        'user_nickname': "{{ user.username }}",
+                        'content_slug': "{{ item.slug }}",
+                        'comment_text': comment_text,
+                        'reply_to_comment_id': comment_id,
+                        'reply_to_nickname': reply_nickname
+                    },
+                    success: function (response) {
+                        $(comment_textarea).text('');
+                        comment = response['comment'];
+                        console.log(comment);
+                        commentBlock = `<div class="comments">
+                                            <div class="comment">
+                                                <img class="comment-img" src="">
+                                                <div class="comment-head">
+                                                    <div class="comment-top">
+                                                        <a href="" class="comment-author">${ comment['user_commentator'] }</a>
+                                                        <div class="reply-button" onclick="toReply(this, ${ comment['id'] }, '${ comment['user_commentator'] }')">Ответить</div>
+                                                        <div class="comment-date" title="17.02.2022 08:33:26">${ comment['created_at'].substring(0,10).replace(new RegExp('-', 'g'), '.') }</div>
                                                     </div>
                                                 </div>
-                                                <hr style="margin: 15px 15px">
-                                            </div>`;
+                                                <div class="comment-body">
+                                                    <div class="comment-text">
+                                                       ${ commentTextFormatting(comment['comment_text']) }
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <hr style="margin: 15px 15px">
+                                        </div>`;
+                        if (reply_nickname == false && comment_id == false){
                             $('#main-comments-block').prepend(commentBlock);
-                            comments_number++;
-                        },
-                        error: function (response) {
-                            console.log(response.responseJSON.errors);
                         }
-                    });
-                }
-                return false;
-            });
-        });
+                        else
+                        {
+                            let button = `<div class="comment-more-button" onclick="moreReplyComments(this)">
+                                                Показать ответы
+                                            </div>`;
+                            $(element).closest('div[class="comments"]').find('div[class="comment-childs-container"]').before(button);
+                            $(element).closest('div[class="comments"]').find('div[class="comment-childs"]').append(commentBlock);
+                            $(element).closest('div[class="comments"]').find('div[class="comment-form"]').remove();
+                        }
+                        comments_number++;
+                    },
+                    error: function (response) {
+                        console.log(response.responseJSON.errors);
+                    }
+                });
+            }
+            return false;
+        }
+
     </script>
 
     <script>
