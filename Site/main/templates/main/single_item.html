@@ -261,7 +261,6 @@
                 $.ajax({
                         url: "{% url 'view_comment' %}",
                         data: {
-                            'user_nickname': "{{ user.username }}",
                             'content_slug': "{{ item.slug }}",
                             'comments_number': comments_number,
                         },
@@ -270,13 +269,15 @@
                             let commentBlock;
                             for (comment of response['comments'])
                             {
-                                commentBlock = `<div class="comments" id="${ comment['id'] }">
+                                commentBlock = `<div class="comments mainComment" id="${ comment['id'] }">
                                                     <div class="comment">
-                                                        <img class="comment-img" src="">
+                                                        <img class="comment-img" src="{% static 'img/page_404.png' %}">
                                                         <div class="comment-head">
                                                             <div class="comment-top">
                                                                 <a href="" class="comment-author">${ comment['user_commentator'] }</a>
+                                                                {% if user.is_authenticated %}
                                                                 <div class="reply-button" onclick="toReply(this, ${ comment['id'] }, '${ comment['user_commentator'] }')">Ответить</div>
+                                                                {% endif %}
                                                                 <div class="comment-date">${ comment['created_at'].substring(0,10).replace(new RegExp('-', 'g'), '.') }</div>
                                                             </div>
                                                         </div>
@@ -286,7 +287,7 @@
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <hr style="margin: 15px 15px">
+                                                    <hr style="margin: 5px 5px">
                                                     <div class="comment-childs-container" style="max-height: 0px;">
                                                         <div class="comment-childs">
                                                         </div>
@@ -303,27 +304,26 @@
                                     $(`#${comment['id']}`).find('div[class="comment-childs-container"]').before(button);
                                     let childComment = '';
                                     for (child of comment['responses']){
-                                        childComment = `<div class="comments">
+                                        childComment = `<div class="comments" id="${ child['id'] }">
                                                     <div class="comment">
-                                                        <img class="comment-img" src="">
+                                                        <img class="comment-img" src="{% static 'img/page_404.png' %}">
                                                         <div class="comment-head">
                                                             <div class="comment-top">
                                                                 <a href="" class="comment-author">${ child['user_commentator'] }</a>
+                                                                {% if user.is_authenticated %}
                                                                 <div class="reply-button" onclick="toReply(this, ${ child['id'] }, '${ child['user_commentator'] }')">Ответить</div>
+                                                                {% endif %}
                                                                 <div class="comment-date">${ child['created_at'].substring(0,10).replace(new RegExp('-', 'g'), '.') }</div>
                                                             </div>
                                                         </div>
                                                         <div class="comment-body">
                                                             <div class="comment-text">
-                                                               ${ commentTextFormatting(child['comment_text']) }
+                                                                <nick class="nick-label" contenteditable="false">${ child['reply_to_user'] }</nick>
+                                                                ${ commentTextFormatting(child['comment_text']) }
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <hr style="margin: 15px 15px">
-                                                    <div class="comment-childs-container" style="max-height: 0px;">
-                                                        <div class="comment-childs">
-                                                        </div>
-                                                    </div>
+                                                    <hr style="margin: 5px 5px">
                                                 </div>`;
                                         $(`#${comment['id']}`).find('div[class="comment-childs"]').append(childComment);
                                     }
@@ -343,6 +343,10 @@
 
             let comment_textarea = $(element).closest('div[class="comment-form"]').find('div[class="comment-textarea"]');
             let comment_text = $(comment_textarea).text();
+            let father_comment = '';
+            if (reply_nickname != false && comment_id != false){
+                father_comment = $(element).closest('.comments.mainComment').attr('id');
+            }
 
             if (comment_text.length < 10)
             {
@@ -357,19 +361,21 @@
                         'content_slug': "{{ item.slug }}",
                         'comment_text': comment_text,
                         'reply_to_comment_id': comment_id,
-                        'reply_to_nickname': reply_nickname
+                        'father_comment': father_comment
                     },
                     success: function (response) {
                         $(comment_textarea).text('');
                         comment = response['comment'];
                         console.log(comment);
-                        commentBlock = `<div class="comments">
+                        commentBlock = `<div class="comments" id="${ comment['id'] }">
                                             <div class="comment">
-                                                <img class="comment-img" src="">
+                                                <img class="comment-img" src="{% static 'img/page_404.png' %}">
                                                 <div class="comment-head">
                                                     <div class="comment-top">
                                                         <a href="" class="comment-author">${ comment['user_commentator'] }</a>
+                                                        {% if user.is_authenticated %}
                                                         <div class="reply-button" onclick="toReply(this, ${ comment['id'] }, '${ comment['user_commentator'] }')">Ответить</div>
+                                                        {% endif %}
                                                         <div class="comment-date" title="17.02.2022 08:33:26">${ comment['created_at'].substring(0,10).replace(new RegExp('-', 'g'), '.') }</div>
                                                     </div>
                                                 </div>
@@ -382,16 +388,20 @@
                                             <hr style="margin: 15px 15px">
                                         </div>`;
                         if (reply_nickname == false && comment_id == false){
-                            $('#main-comments-block').prepend(commentBlock);
+                            $('#main-comments-block').prepend(commentBlock).addClass('mainComment');
                         }
                         else
                         {
-                            let button = `<div class="comment-more-button" onclick="moreReplyComments(this)">
-                                                Показать ответы
-                                            </div>`;
-                            $(element).closest('div[class="comments"]').find('div[class="comment-childs-container"]').before(button);
-                            $(element).closest('div[class="comments"]').find('div[class="comment-childs"]').append(commentBlock);
-                            $(element).closest('div[class="comments"]').find('div[class="comment-form"]').remove();
+                            if (!$(element).closest('.comments.mainComment').find('div[class="comment-more-button"]').length)
+                            {
+                                let button = `<div class="comment-more-button" onclick="moreReplyComments(this)">
+                                                    Показать ответы
+                                                </div>`;
+                                $(element).closest('.comments.mainComment').find('div[class="comment-childs-container"]').before(button);
+                            }
+                            $(element).closest('.comments.mainComment').find('div[class="comment-childs"]').append(commentBlock);
+                            $(`#${ comment['id'] }`).find('.comment-text').prepend(`<nick class="nick-label" contenteditable="false">${ reply_nickname }</nick>`);
+                            $(element).closest('.comments.mainComment').find('div[class="comment-form"]').remove();
                         }
                         comments_number++;
                     },

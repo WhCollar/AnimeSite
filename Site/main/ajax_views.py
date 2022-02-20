@@ -85,15 +85,17 @@ def create_comment(request):
     user = User.objects.get(username=request.GET.get('user_nickname', None))
     content = Content.objects.get(slug=request.GET.get('content_slug', None))
     comment_text = request.GET.get('comment_text', None)
-    reply_to_nickname = request.GET.get('reply_to_nickname', None)
+    father_comment_value = request.GET.get('father_comment', None)
     obj = None
 
     try:
         response_to_comment = Comments.objects.get(id=request.GET.get('reply_to_comment_id', None))
+        father_comment = Comments.objects.get(id=father_comment_value)
         obj = Comments(user_commentator=user,
                        content=content,
                        comment_text=comment_text,
-                       response_to_comment=response_to_comment)
+                       response_to_comment=response_to_comment,
+                       father_comment=father_comment)
     except:
         obj = Comments(user_commentator=user, content=content, comment_text=comment_text)
         print("Shit code")
@@ -105,7 +107,6 @@ def create_comment(request):
         "user_commentator": obj.user_commentator.username,
         "comment_text": obj.comment_text,
         "created_at": obj.created_at,
-        "reply_to_nickname": reply_to_nickname,
         "id": obj.id
     }
     response['comment'] = comment
@@ -117,20 +118,20 @@ def create_comment(request):
 
 
 def view_comment(request):
-    user = User.objects.get(username=request.GET.get('user_nickname', None))
     content = Content.objects.get(slug=request.GET.get('content_slug', None))
     c_num = int(request.GET.get('comments_number', None))
     c_num_next7 = c_num + 7
     response = dict()
     comments = list()
 
-    objs = Comments.objects.filter(user_commentator=user, content=content, response_to_comment__isnull=True).order_by('-created_at')[c_num:c_num_next7]
+    objs = Comments.objects.filter(content=content, response_to_comment__isnull=True).order_by('-created_at')[c_num:c_num_next7]
     for obj in objs:
         responses = list()
-        if Comments.objects.filter(response_to_comment=obj.id).exists:
-            for el in Comments.objects.filter(response_to_comment=obj.id):
+        if Comments.objects.filter(father_comment=obj.id).exists:
+            for el in Comments.objects.filter(father_comment=obj.id):
                 child = {
                     "user_commentator": el.user_commentator.username,
+                    "reply_to_user": el.response_to_comment.user_commentator.username,
                     "comment_text": el.comment_text,
                     "created_at": el.created_at,
                     "id": el.id,

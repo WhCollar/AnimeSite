@@ -5,6 +5,7 @@
 @import url("./plugin/jquery.fs.tipper.css");
 @import url(http://fonts.googleapis.com/css?family=Roboto:400,100,200,300,500,600,700,800,900);
 @import url('https://fonts.googleapis.com/css?family=Open+Sans');
+@import url('https://fonts.googleapis.com/css2?family=Fira+Sans:ital@1&display=swap');
 
 
 /* 
@@ -77,7 +78,7 @@ body {
     line-height: 24px;
     color: #323232;
     font-size: 13px;
-    font-family: 'Roboto', sans-serif;
+    font-family: 'Fira Sans', sans-serif;
     font-weight: 400;
     letter-spacing: 1px;
 }
@@ -132,7 +133,7 @@ br {
 hr {
     margin-bottom: 0px;
     margin-top: 0px;
-    border-top: 1px solid #f1f1f1;
+    border-top: 2px solid #9b9b9b;
     border-bottom: none;
     border-left: none;
     border-right: none;
@@ -3586,7 +3587,7 @@ header.header-dark.header-prepare .side-menu-btn ul li a {
 
 .project-detail-block p {
     font-size: 12px;
-    letter-spacing: 2px;
+    letter-spacing: 1px;
     text-transform: uppercase;
 }
 
@@ -4812,8 +4813,8 @@ ul.project-detail-block, .project-detail-block ul {
 .comment-img {
     position: relative;
     float: left;
-    width: 100px;
-    height: 100px;
+    max-width: 100px;
+    max-height: 100px;
     margin-right: 10px;
     overflow: hidden;
     cursor: pointer;
@@ -4853,6 +4854,10 @@ ul.project-detail-block, .project-detail-block ul {
     -o-text-overflow: ellipsis;
     text-overflow: ellipsis;
     overflow: hidden;
+    color: #fff;
+    background-color: #ff6666;
+    border-radius: 2px;
+    padding: 0 5px;
     max-width: 100%;
     cursor: pointer;
     margin-bottom: 4px;
@@ -4890,6 +4895,7 @@ ul.project-detail-block, .project-detail-block ul {
     padding: 2px 7px;
     cursor: pointer;
     text-align: center;
+    vertical-align: bottom;
 }
 
 spoiler {
@@ -4907,28 +4913,53 @@ spoiler:after {
 }
 
 .comment-childs-container {
-    -webkit-transition: max-height .4s;
-    -o-transition: max-height .4s;
-    transition: max-height .4s;
+    -moz-transition: max-height .5s;
+    -ms-transition: max-height .5s;
+    -o-transition: max-height .5s;
+    -webkit-transition: max-height .5s;
+    transition: max-height .5s;
     overflow: hidden;
     max-height: 0;
 }
 
 .comment-childs {
     padding: 10px 0 10px 10px;
-    border-bottom: 1px solid;
-    border-bottom-color: var(--border-first);
+    border-bottom: 1px solid #f1f1f1;
+}
+
+.comment-childs .comments {
+    border-left: 1px solid;
+    border-left-color: #ff6666;
+    padding-left: 10px;
 }
 
 .comment-more-button {
     text-align: center;
     padding: 6px 8px 6px 30px;
     border: 1px solid;
-    border-color: var(--border-first);
-    border-top: none;
     cursor: pointer;
 }
 
+.nick-label {
+    display: inline-block;
+    vertical-align: bottom;
+    color: #eee;
+    background-color: #444;
+    max-width: 142px;
+    font-size: 13px;
+    line-height: 1.4;
+    padding: 0 5px;
+    -webkit-border-radius: 2px;
+    border-radius: 2px;
+    white-space: nowrap;
+    -o-text-overflow: ellipsis;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.nick-label:before {
+    content: '@';
+}
 /* Окончание */
 
 /*----------------------------------------------------------------------*/

@@ -799,7 +799,7 @@ function hideSpoiler(element){
 }
 
 function toReply(element, comment_id, nickname){
-    let parent_element = $(element).closest('div[class="comments"]');
+    let parent_element = $(element).closest('div[class="comments mainComment"]');
     if (!$(parent_element).find('div[class="comment-form"]').length){
         let obj = `<div class="comment-form">
                         <div class="comment-textarea" contenteditable="true" data-placeholder="Спойлеры скрывайте под тегом " data-icon="<Спойлер>"></div>
@@ -820,9 +820,8 @@ function toReply(element, comment_id, nickname){
 }
 
 function moreReplyComments(element){
-    let hightBlock = 145;
     if ($(element).next().attr('style') == 'max-height: 0px;'){
-        $(element).next().css({'max-height': `${hightBlock}px`});
+        $(element).next().css({'max-height': 'none'});
         $(element).text('Скрыть ответы');
 
     }

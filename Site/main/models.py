@@ -179,7 +179,8 @@ class ContentList(models.Model):
 
 class Comments(models.Model):
     user_commentator = models.ForeignKey(User, on_delete=models.PROTECT, blank=False)
-    response_to_comment = models.ForeignKey('self', on_delete=models.CASCADE, null=True)
+    response_to_comment = models.ForeignKey('self', on_delete=models.CASCADE, null=True, related_name='_response_to_comment')
+    father_comment = models.ForeignKey('self', on_delete=models.CASCADE, null=True, related_name='_father_comment')
     content = models.ForeignKey(Content, on_delete=models.PROTECT, blank=False)
     comment_text = models.TextField(blank=False)
     update_at = models.DateTimeField(auto_now=True)
