@@ -1,6 +1,8 @@
 from django.db import models
 from django.urls import reverse
 from django.contrib.auth.models import User
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 '''
 Content (Slug Title Photo Status Year Season Age_rating Genre Original_source Studio 
@@ -156,11 +158,17 @@ class ListType(models.Model):
 
 class UserProfiles(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    gender = models.CharField(max_length=1, blank=True)
-    hometown = models.CharField(max_length=50, blank=True)
-    photo = models.ImageField(upload_to='photos/%y/%m/%d/', blank=True, null=True)
+    gender = models.CharField(max_length=1, null=True)
+    hometown = models.CharField(max_length=50, null=True)
+    photo = models.ImageField(upload_to='photos/%y/%m/%d/', null=True)
     update_at = models.DateField(auto_now=True)
     created_at = models.DateField(auto_now_add=True)
+
+    @receiver(post_save, sender=User)
+    def create_user_profile(sender, instance, created, **kwargs):
+        if created:
+            obj = UserProfiles.objects.create(user=instance)
+            obj.save()
 
     class Meta:
         verbose_name = 'Профиль ползователя'

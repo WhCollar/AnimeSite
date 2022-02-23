@@ -2,7 +2,7 @@
 {% load static %}
 
 
-{% block title %}{{ block.super }} :: {{ title }}{% endblock %}
+{% block title %}{{ block.super }} :: {{ user.username }}{% endblock %}
 
 {% block content %}
 <!-- CONTENT --------------------------------------------------------------------------------->
@@ -12,8 +12,8 @@
     <div class="container">
         <div class="row">
             <div class="col-md-8 col-md-offset-2 title">
-                <div class="item-box col-md-3 col-sm-3 col-sm-offset-0 col-xs-8 col-xs-offset-2 mb-30">
-                    {% if item.photo %}
+                <div class="col-md-3 col-sm-3 col-sm-offset-0 col-xs-8 col-xs-offset-2 mb-30">
+                    {% if profile.photo %}
                     <img alt="1" src="{{ item.photo.url }}" class="item-container">
                     {% else %}
                     <img alt="1" src="{% static 'img/page_404.png' %}" class="item-container">
@@ -22,7 +22,7 @@
                 <div class="col-md-7 col-sm-7 col-xs-12 text-center">
                     <h2 class="h2">Profile</h2>
                     <div class="page-breadcrumb">
-                        <a href="{% url 'home' %}}">Home</a>/<a href="{% url 'profile' %}">Profile</a>
+                        <a href="{% url 'home' %}}">Home</a>/<a href="{% url 'profile' user.id %}">Profile</a>
                     </div>
                 </div>
             </div>

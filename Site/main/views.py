@@ -46,8 +46,17 @@ def index(request):
     return render(request, 'main/index.html')
 
 
-def profile(request):
-    return render(request, 'main/profile.html')
+class Profile(DetailView):
+    model = User
+    template_name = 'main/profile.html'
+    context_object_name = 'profile'
+
+    def get_context_data(self, object_list=None, **kwargs):
+        user = User.objects.get(id=self.kwargs['pk'])
+        context = super().get_context_data(**kwargs)
+        context['user'] = user
+        context['profile'] = UserProfiles.objects.get(user=user)
+        return context
 
 
 class GetItem(DetailView):
