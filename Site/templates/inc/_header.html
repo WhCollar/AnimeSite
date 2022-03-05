@@ -39,7 +39,7 @@
                     <a class="" href="{% url 'catalog' %}">Catalog</a>
                 </li>
                 <li>
-                    <a class="" href="contact-us.html">Contact Us</a>
+                    <a class="" href="{% url 'community_news' %}">Community news</a>
                 </li>
                 <li>
                     {% if user.is_authenticated %}

@@ -123,12 +123,12 @@
         </div>
         {% for content in catalog %}
         <div class="row mtb-30">
-            <div class="col-md-4 col-sm-4 col-sm-offset-0 col-xs-8 col-xs-offset-2 mb-sm-30">
+            <div class="col-md-4 col-sm-4 col-sm-offset-0 col-xs-8 col-xs-offset-2 mb-sm-30 text-center">
                 <a href="{{ content.get_absolute_url }}">
                     {% if content.photo %}
-                    <img style="max-width: 245px" alt="1" src="{{ content.photo.url }}" class="item-container">
+                    <img style="max-width: 175px" alt="1" src="{{ content.photo.url }}" class="item-container">
                     {% else %}
-                    <img style="max-width: 245px" alt="1" src="{% static 'img/page_404.png' %}" class="item-container">
+                    <img style="max-width: 175px" alt="1" src="{% static 'img/page_404.png' %}" class="item-container">
                     {% endif %}
                 </a>
             </div>

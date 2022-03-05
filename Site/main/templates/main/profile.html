@@ -14,16 +14,27 @@
             <div class="col-md-8 col-md-offset-2 title">
                 <div class="col-md-3 col-sm-3 col-sm-offset-0 col-xs-8 col-xs-offset-2 mb-30">
                     {% if profile.photo %}
-                    <img alt="1" src="{{ item.photo.url }}" class="item-container">
+                    <img alt="1" src="{{ profile.photo.url }}" class="item-container">
                     {% else %}
                     <img alt="1" src="{% static 'img/page_404.png' %}" class="item-container">
                     {% endif %}
                 </div>
-                <div class="col-md-7 col-sm-7 col-xs-12 text-center">
-                    <h2 class="h2">Profile</h2>
-                    <div class="page-breadcrumb">
-                        <a href="{% url 'home' %}}">Home</a>/<a href="{% url 'profile' user.id %}">Profile</a>
-                    </div>
+                <div class="project-detail-block text-left col-md-7 col-sm-7 col-xs-12">
+                    <p>
+                        <strong class="dark-color">Пол :</strong> {{ profile.gender }}
+                    </p>
+                    <p>
+                        <strong class="dark-color">Город :</strong> {{ profile.hometown }}
+                    </p>
+                    <p>
+                        <strong class="dark-color">Email :</strong> {{ user.email }}
+                    </p>
+                    <p>
+                        <strong class="dark-color">На сайте с </strong> {{ user.date_joined }}
+                    </p>
+                    <p>
+                        <strong class="dark-color">Соцсети :</strong> 123457890
+                    </p>
                 </div>
             </div>
         </div>
@@ -32,39 +43,8 @@
 <div class="clearfix"></div>
 <!-- End Intro Section -->
 <!-- Options Section -->
-<section class="ptb ptb-sm-80">
+<section class="ptb-30 ptb-sm-30">
     <div class="container text-left">
-        <div class="row mb-60">
-            <div class="col-md-8 mb-30">
-                <p>Aenean tempor ullamcorper leo. Vivamus sed magna quis ligula eleifend adipiscing. Duis orci. Aliquam
-                    sodales tortor
-                    vitae ipsum. Aliquam nulla. Duis aliquam molestie erat. Ut et mauris vel pede varius sollicitudin.
-                    Sed ut dolor nec
-                    orci tincidunt interdum. Phasellus ipsum. Nunc tristique tempus lectus.
-                </p>
-                <a class="scroll-to-target" onclick="getElementById('cv-tab').click();" href="#cv-tab">Read More</a>
-            </div>
-            <div class="project-detail-block col-md-4">
-                <p>
-                    <strong class="dark-color">Category:</strong>Singer, Musician
-                </p>
-
-                <p>
-                    <strong class="dark-color">Place :</strong>Pune
-                </p>
-                <p>
-                    <strong class="dark-color">Email :</strong><a>www.google.com</a>
-                </p>
-                <p>
-                    <strong class="dark-color">Website :</strong><a>www.google.com</a>
-                </p>
-                <p>
-                    <strong class="dark-color">Contact :</strong>123457890
-                </p>
-            </div>
-
-        </div>
-
         <div class="row">
             <div class="row col-md-12">
                 <!-- Tab -->
@@ -83,7 +63,26 @@
                         <div id="tabs-1">
                             <div class="container">
                                 <div class="row mb-15">
-
+                                    <div class="container">
+                                    {% if lists.whatching %}
+                                        {% for title in lists.whatching %}
+                                                <div class="row-list">
+                                                    <div class="col-sm-2">
+                                                        <img alt="1" src="{{ title.content.photo.url }}" class="list-img">
+                                                    </div>
+                                                    <div class="col">
+                                                        <p>{{ title.content.title }}</p>
+                                                    </div>
+                                                </div>
+                                        {% endfor %}
+                                    {% else %}
+                                        <div class="row-list">
+                                            <div class="col">
+                                                <p>Список пуст</p>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -91,7 +90,26 @@
                         <div id="tabs-2">
                             <div class="container">
                                 <div class="row mb-15">
-
+                                    <div class="container">
+                                    {% if lists.will_be_watching %}
+                                        {% for title in lists.will_be_watching %}
+                                                <div class="row-list">
+                                                    <div class="col-sm-2">
+                                                        <img alt="1" src="{{ title.content.photo.url }}" class="list-img">
+                                                    </div>
+                                                    <div class="col">
+                                                        <p>{{ title.content.title }}</p>
+                                                    </div>
+                                                </div>
+                                        {% endfor %}
+                                    {% else %}
+                                        <div class="row-list">
+                                            <div class="col">
+                                                <p>Список пуст</p>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -99,7 +117,26 @@
                         <div id="tabs-3">
                             <div class="container">
                                 <div class="row mb-15">
-
+                                    <div class="container">
+                                    {% if lists.viewed %}
+                                        {% for title in lists.viewed %}
+                                                <div class="row-list">
+                                                    <div class="col-sm-2">
+                                                        <img alt="1" src="{{ title.content.photo.url }}" class="list-img">
+                                                    </div>
+                                                    <div class="col">
+                                                        <p>{{ title.content.title }}</p>
+                                                    </div>
+                                                </div>
+                                        {% endfor %}
+                                    {% else %}
+                                        <div class="row-list">
+                                            <div class="col">
+                                                <p>Список пуст</p>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -107,7 +144,26 @@
                         <div id="tabs-4">
                             <div class="container">
                                 <div class="row mb-15">
-
+                                    <div class="container">
+                                    {% if lists.abandoned %}
+                                        {% for title in lists.abandoned %}
+                                                <div class="row-list">
+                                                    <div class="col-sm-2">
+                                                        <img alt="1" src="{{ title.content.photo.url }}" class="list-img">
+                                                    </div>
+                                                    <div class="col">
+                                                        <p>{{ title.content.title }}</p>
+                                                    </div>
+                                                </div>
+                                        {% endfor %}
+                                    {% else %}
+                                        <div class="row-list">
+                                            <div class="col">
+                                                <p>Список пуст</p>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -115,7 +171,26 @@
                         <div id="tabs-5">
                             <div class="container">
                                 <div class="row mb-15">
-
+                                    <div class="container">
+                                    {% if lists.like %}
+                                        {% for title in lists.like %}
+                                                <div class="row-list">
+                                                    <div class="col-sm-2    ">
+                                                        <img alt="1" src="{{ title.content.photo.url }}" class="list-img">
+                                                    </div>
+                                                    <div class="col">
+                                                        <p>{{ title.content.title }}</p>
+                                                    </div>
+                                                </div>
+                                        {% endfor %}
+                                    {% else %}
+                                        <div class="row-list">
+                                            <div class="col">
+                                                <p>Список пуст</p>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                    </div>
                                 </div>
                             </div>
                         </div>

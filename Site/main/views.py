@@ -1,5 +1,8 @@
+from urllib.parse import urlencode
+
 from django.contrib.auth import logout
 from django.contrib.auth.views import LoginView
+from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views.generic import DetailView, CreateView
@@ -43,7 +46,21 @@ class Catalog(FilterView):
 
 
 def index(request):
-    return render(request, 'main/index.html')
+    try:
+        arg = request.get('q')
+        if not arg == '':
+            return HttpResponseRedirect(reverse('catalog', kwargs={'q': arg}))
+    except:
+        return render(request, 'main/index.html')
+
+
+def community_news(request):
+    try:
+        arg = request.get('q')
+        if not arg == '':
+            return HttpResponseRedirect(reverse('catalog', kwargs={'q': arg}))
+    except:
+        return render(request, 'main/community_news.html')
 
 
 class Profile(DetailView):
@@ -53,9 +70,17 @@ class Profile(DetailView):
 
     def get_context_data(self, object_list=None, **kwargs):
         user = User.objects.get(id=self.kwargs['pk'])
+        lists = ContentList.objects.filter(user=user)
         context = super().get_context_data(**kwargs)
         context['user'] = user
         context['profile'] = UserProfiles.objects.get(user=user)
+        context['lists'] = {
+            'like': lists.filter(list_type=ListType.objects.get(title='Любимые')),
+            'whatching': lists.filter(list_type=ListType.objects.get(title='Смотрю')),
+            'will_be_watching': lists.filter(list_type=ListType.objects.get(title='Буду смотреть')),
+            'abandoned': lists.filter(list_type=ListType.objects.get(title='Брошено')),
+            'viewed': lists.filter(list_type=ListType.objects.get(title='Просмотрено'))
+        }
         return context
 
 
